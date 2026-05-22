@@ -8,34 +8,80 @@
 </head>
 <body>
   <!-- Navigation -->
-  <nav>
-    <div class="nav-content">
-      <div class="logo-badge">
-        <div class="logo-avatar">S</div>
-        <div class="logo-text">
-          <span class="logo-name">Satyam Tiwari</span>
-          <span class="logo-sub">B.TECH</span>
-        </div>
-      </div>      
-      <ul class="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li>
-          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-            <svg id="sunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-            <svg id="moonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-            </svg>
-          </button>
-        </li>
-      </ul>
-      </button>
+<nav>
+  <div class="nav-content">
+
+    <!-- LOGO -->
+    <div class="logo-badge">
+      <div class="logo-avatar">S</div>
+
+      <div class="logo-text">
+        <span class="logo-name">Satyam Tiwari</span>
+        <span class="logo-sub">B.TECH</span>
+      </div>
     </div>
-  </nav>
+
+    <!-- DESKTOP NAV -->
+    <ul class="nav-links desktop-nav">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+
+      <li>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg id="sunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+            </path>
+          </svg>
+
+          <svg id="moonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+            </path>
+          </svg>
+        </button>
+      </li>
+    </ul>
+
+    <!-- MOBILE CONTROLS -->
+    <div class="mobile-controls">
+
+      <!-- HAMBURGER -->
+      <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
+        ☰
+      </div>
+
+      <!-- MOBILE THEME -->
+      <button class="theme-toggle mobile-theme-toggle" id="mobileThemeToggle" aria-label="Toggle theme">
+
+        <svg id="mobileSunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+          </path>
+        </svg>
+
+        <svg id="mobileMoonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+          </path>
+        </svg>
+
+      </button>
+
+    </div>
+
+    <!-- MOBILE DROPDOWN -->
+    <ul class="nav-links mobile-nav" id="mobileNav">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+  </div>
+</nav>
 
   <!-- Hero Section -->
 <section class="hero">
@@ -92,28 +138,28 @@
         <div class="about-text">
           <p>I’m a B.Tech Information Technology student focused on software development, web development, and practical problem-solving through real-world projects.</p>
 
-<p>Currently pursuing my degree at AKTU, I’m strengthening my foundation in frontend development, backend logic, data structures, and modern programming practices while continuously learning AI concepts and their practical applications.</p>
-
-<p>I enjoy transforming ideas into functional and user-focused applications with an emphasis on clean structure, usability, and scalability. I’m actively seeking opportunities, internships, and collaborations where I can contribute, learn, and grow as a developer.</p>
-
-<div class="achievements">
-
-  <div class="achievement">
-    <div class="achievement-dot"></div>
-    <span>Strong foundation in Data Structures & Algorithms, OOP concepts, and analytical problem-solving</span>
-  </div>
-
-  <div class="achievement">
-    <div class="achievement-dot"></div>
-    <span>Experience building projects using Java, Python, JavaScript, HTML, CSS, and modern web technologies</span>
-  </div>
-
-  <div class="achievement">
-    <div class="achievement-dot"></div>
-    <span>Focused on full-stack web development, scalable application design, and learning practical AI concepts</span>
-  </div>
-
-</div>
+          <p>Currently pursuing my degree at AKTU, I’m strengthening my foundation in frontend development, backend logic, data structures, and modern programming practices while continuously learning AI concepts and their practical applications.</p>
+          
+          <p>I enjoy transforming ideas into functional and user-focused applications with an emphasis on clean structure, usability, and scalability. I’m actively seeking opportunities, internships, and collaborations where I can contribute, learn, and grow as a developer.</p>
+          
+          <div class="achievements">
+          
+            <div class="achievement">
+              <div class="achievement-dot"></div>
+              <span>Strong foundation in Data Structures & Algorithms, OOP concepts, and analytical problem-solving</span>
+            </div>
+          
+            <div class="achievement">
+              <div class="achievement-dot"></div>
+              <span>Experience building projects using Java, Python, JavaScript, HTML, CSS, and modern web technologies</span>
+            </div>
+          
+            <div class="achievement">
+              <div class="achievement-dot"></div>
+              <span>Focused on full-stack web development, scalable application design, and learning practical AI concepts</span>
+            </div>
+          
+          </div>
         </div>
       </div>
     </div>
