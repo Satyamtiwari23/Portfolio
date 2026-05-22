@@ -1,25 +1,55 @@
 // Theme Toggle
-const themeToggle = document.getElementById('themeToggle');
+const desktopThemeToggle = document.getElementById('themeToggle');
+const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+
 const sunIcon = document.getElementById('sunIcon');
 const moonIcon = document.getElementById('moonIcon');
+
 const html = document.documentElement;
 
-// Check for saved theme preference or default to 'light'
+// Default Theme
 const currentTheme = localStorage.getItem('theme') || 'dark';
+
 html.classList.toggle('dark', currentTheme === 'dark');
+
 updateThemeIcons();
 
-themeToggle.addEventListener('click', () => {
-  html.classList.toggle('dark');
-  const theme = html.classList.contains('dark') ? 'dark' : 'light';
-  localStorage.setItem('theme', theme);
-  updateThemeIcons();
-});
+// THEME FUNCTION
+function toggleTheme() {
 
+  html.classList.toggle('dark');
+
+  const theme = html.classList.contains('dark')
+    ? 'dark'
+    : 'light';
+
+  localStorage.setItem('theme', theme);
+
+  updateThemeIcons();
+}
+
+// DESKTOP BUTTON
+if (desktopThemeToggle) {
+  desktopThemeToggle.addEventListener('click', toggleTheme);
+}
+
+// MOBILE BUTTON
+if (mobileThemeToggle) {
+  mobileThemeToggle.addEventListener('click', toggleTheme);
+}
+
+// UPDATE ICONS
 function updateThemeIcons() {
+
   const isDark = html.classList.contains('dark');
-  sunIcon.style.display = isDark ? 'block' : 'none';
-  moonIcon.style.display = isDark ? 'none' : 'block';
+
+  if (sunIcon) {
+    sunIcon.style.display = isDark ? 'block' : 'none';
+  }
+
+  if (moonIcon) {
+    moonIcon.style.display = isDark ? 'none' : 'block';
+  }
 }
 
 // 3D Tilt Effect
@@ -92,4 +122,21 @@ window.addEventListener("click", function(e) {
   if (!e.target.closest(".resume-dropdown")) {
     document.getElementById("resumeMenu").classList.remove("show");
   }
+});
+
+function toggleMobileMenu() {
+  document.getElementById("mobileNav").classList.toggle("active");
+}
+
+// AUTO CLOSE MOBILE MENU
+document.querySelectorAll('.mobile-nav a').forEach(link => {
+
+  link.addEventListener('click', () => {
+
+    document
+      .getElementById('mobileNav')
+      .classList.remove('active');
+
+  });
+
 });
