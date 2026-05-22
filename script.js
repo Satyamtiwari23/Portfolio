@@ -5,7 +5,7 @@ const moonIcon = document.getElementById('moonIcon');
 const html = document.documentElement;
 
 // Check for saved theme preference or default to 'light'
-const currentTheme = localStorage.getItem('theme') || 'light';
+const currentTheme = localStorage.getItem('theme') || 'dark';
 html.classList.toggle('dark', currentTheme === 'dark');
 updateThemeIcons();
 
