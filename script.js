@@ -224,7 +224,7 @@ if (reviewForm) {
     try {
 
       const res = await fetch(
-        "http://localhost:8000/api/reviews",
+        "https://portfolio-backend-4g3y.onrender.com/api/reviews",
         {
           method: "POST",
           headers: {
@@ -273,7 +273,7 @@ async function loadReviews() {
   try {
 
     const res = await fetch(
-      "http://localhost:8000/api/reviews"
+      "https://portfolio-backend-4g3y.onrender.com/api/reviews"
     );
 
     const reviews = await res.json();
