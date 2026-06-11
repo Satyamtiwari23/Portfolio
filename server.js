@@ -11,11 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 
-mongoose.connect(
-  "mongodb+srv://sttiwari9211_db_user:YOUR_PASSWORD@cluster0.zi5ta2x.mongodb.net/portfolioDB?retryWrites=true&w=majority&appName=Cluster0"
-)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 //API
 app.post("/api/reviews", async (req, res) => {
 
@@ -65,8 +63,10 @@ app.get("/api/reviews", async (req, res) => {
 
 });
 
-app.listen(8000, () => {
-    console.log("Server running on port 8000");
+
+
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
-
-
