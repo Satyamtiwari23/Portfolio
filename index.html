@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,123 +8,128 @@
   <link rel="icon" href="Logo.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Navigation -->
-<nav>
-  <div class="nav-content">
+  <nav>
+    <div class="nav-content">
 
-    <!-- LOGO -->
-    <div class="logo-badge">
-      <div class="logo-avatar">S</div>
+      <!-- LOGO -->
+      <a href="#home" id="logo" class="logo">
+        <div class="logo-badge">
+          <div class="logo-avatar">S</div>
 
-      <div class="logo-text">
-        <span class="logo-name">Satyam Tiwari</span>
-        <span class="logo-sub">B.TECH</span>
-      </div>
-    </div>
+          <div class="logo-text">
+            <span class="logo-name">Satyam Tiwari</span>
+            <span class="logo-sub">B.TECH</span>
+          </div>
+        </div>
+      </a>
 
-    <!-- DESKTOP NAV -->
-    <ul class="nav-links desktop-nav">
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <!-- DESKTOP NAV -->
+      <ul class="nav-links desktop-nav">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#Reviews">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
 
-      <li>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg id="sunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <li>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <svg id="sunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+              </path>
+            </svg>
+
+            <svg id="moonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+              </path>
+            </svg>
+          </button>
+        </li>
+      </ul>
+
+      <!-- MOBILE CONTROLS -->
+      <div class="mobile-controls">
+
+        <!-- HAMBURGER -->
+        <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
+          ☰
+        </div>
+
+        <!-- MOBILE THEME -->
+        <button class="theme-toggle mobile-theme-toggle" id="mobileThemeToggle" aria-label="Toggle theme">
+
+          <svg id="mobileSunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
             </path>
           </svg>
 
-          <svg id="moonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg id="mobileMoonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
             </path>
           </svg>
+
         </button>
-      </li>
-    </ul>
 
-    <!-- MOBILE CONTROLS -->
-    <div class="mobile-controls">
-
-      <!-- HAMBURGER -->
-      <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
-        ☰
       </div>
 
-      <!-- MOBILE THEME -->
-      <button class="theme-toggle mobile-theme-toggle" id="mobileThemeToggle" aria-label="Toggle theme">
-
-        <svg id="mobileSunIcon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
-          </path>
-        </svg>
-
-        <svg id="mobileMoonIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-          </path>
-        </svg>
-
-      </button>
+      <!-- MOBILE DROPDOWN -->
+      <ul class="nav-links mobile-nav" id="mobileNav">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#Reviews">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
 
     </div>
-
-    <!-- MOBILE DROPDOWN -->
-    <ul class="nav-links mobile-nav" id="mobileNav">
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-
-  </div>
-</nav>
+  </nav>
 
   <!-- Hero Section -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-text">
-      <div class="hero-greeting">Hi, I’m Satyam 👋</div>
-      <h1 class="hero-title">Satyam Tiwari</h1>
-      <p class="hero-subtitle">Software Developer | AI & Web Development | Java • JavaScript</p>
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-greeting">Hi, I’m Satyam 👋</div>
+        <h1 class="hero-title">Satyam Tiwari</h1>
+        <p class="hero-subtitle">Software Developer | AI & Web Development | Java • JavaScript</p>
 
-      <!-- ✅ Buttons Wrapper -->
-      <div class="hero-buttons">
+        <!-- ✅ Buttons Wrapper -->
+        <div class="hero-buttons">
 
-        <div class="resume-dropdown">
-          <a href="#" class="cta-button resume-btn" onclick="toggleMenu(event)">
-            Download Resume ⬇
-          </a>
-
-          <div id="resumeMenu" class="resume-menu">
-            <a href="resume-software.pdf" target="_blank">
-              Software Developer
+          <div class="resume-dropdown">
+            <a href="#" class="cta-button resume-btn" onclick="toggleMenu(event)">
+              Download Resume ⬇
             </a>
-            <a href="resume-ai.pdf" target="_blank">
-              AI-Focused Roles
-            </a>
+
+            <div id="resumeMenu" class="resume-menu">
+              <a href="resume-software.pdf" target="_blank">
+                Software Developer
+              </a>
+              <a href="resume-ai.pdf" target="_blank">
+                AI-Focused Roles
+              </a>
+            </div>
           </div>
-        </div>
 
-        <a href="#contact" class="cta-button">Contact Me</a>
+          <a href="#contact" class="cta-button">Contact Me</a>
+
+        </div>
+        <!-- ✅ End Buttons Wrapper -->
 
       </div>
-      <!-- ✅ End Buttons Wrapper -->
-
     </div>
-  </div>
 
-  <div class="scroll-indicator">
-    <div class="scroll-mouse">
-      <div class="scroll-wheel"></div>
+    <div class="scroll-indicator">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
   <!-- About Section -->
   <section id="about">
@@ -137,29 +143,37 @@
           <img src="satyam-profile.jpg" height="500px" alt="Satyam's Profile Picture" loading="lazy">
         </div>
         <div class="about-text">
-          <p>I’m a B.Tech Information Technology student focused on software development, web development, and practical problem-solving through real-world projects.</p>
+          <p>I’m a B.Tech Information Technology student focused on software development, web development, and practical
+            problem-solving through real-world projects.</p>
 
-          <p>Currently pursuing my degree at AKTU, I’m strengthening my foundation in frontend development, backend logic, data structures, and modern programming practices while continuously learning AI concepts and their practical applications.</p>
-          
-          <p>I enjoy transforming ideas into functional and user-focused applications with an emphasis on clean structure, usability, and scalability. I’m actively seeking opportunities, internships, and collaborations where I can contribute, learn, and grow as a developer.</p>
-          
+          <p>Currently pursuing my degree at AKTU, I’m strengthening my foundation in frontend development, backend
+            logic, data structures, and modern programming practices while continuously learning AI concepts and their
+            practical applications.</p>
+
+          <p>I enjoy transforming ideas into functional and user-focused applications with an emphasis on clean
+            structure, usability, and scalability. I’m actively seeking opportunities, internships, and collaborations
+            where I can contribute, learn, and grow as a developer.</p>
+
           <div class="achievements">
-          
+
             <div class="achievement">
               <div class="achievement-dot"></div>
-              <span>Strong foundation in Data Structures & Algorithms, OOP concepts, and analytical problem-solving</span>
+              <span>Strong foundation in Data Structures & Algorithms, OOP concepts, and analytical
+                problem-solving</span>
             </div>
-          
+
             <div class="achievement">
               <div class="achievement-dot"></div>
-              <span>Experience building projects using Java, Python, JavaScript, HTML, CSS, and modern web technologies</span>
+              <span>Experience building projects using Java, Python, JavaScript, HTML, CSS, and modern web
+                technologies</span>
             </div>
-          
+
             <div class="achievement">
               <div class="achievement-dot"></div>
-              <span>Focused on full-stack web development, scalable application design, and learning practical AI concepts</span>
+              <span>Focused on full-stack web development, scalable application design, and learning practical AI
+                concepts</span>
             </div>
-          
+
           </div>
         </div>
       </div>
@@ -175,22 +189,32 @@
       </div>
       <div class="projects-grid">
         <div class="project-card tilt-element" data-intensity="8">
-          <div class="project-image"><img src="phishing.png" height="210px" width="360px" alt="Phishing Website Detection System"></div>
+          <div class="project-image"><img src="phishing.png" height="210px" width="360px"
+              alt="Phishing Website Detection System"></div>
           <div class="project-info">
             <h3 class="project-title">Phishing Website Detection System</h3>
-            <p class="project-description">A client-side phishing detection tool developed in JavaScript evaluates URL structures against known phishing indicators to enhance user safety.</p>
+            <p class="project-description">A client-side phishing detection tool developed in JavaScript evaluates URL
+              structures against known phishing indicators to enhance user safety.</p>
             <div class="project-tags">
-              <span class="tag">HTML</span>
-              <span class="tag">CSS</span>
               <span class="tag">JavaScript</span>
+              <span class="tag">Node.js</span>
+              <span class="tag">Express.js</span>
+              <span class="tag">MongoDB</span>
+              <span class="tag">Mongoose</span>
+              <span class="tag">REST API</span>
+              <span class="tag">URL Analysis</span>
+              <span class="tag">DOM Manipulation</span>
+              <span class="tag">Express.js</span>
             </div>
           </div>
         </div>
         <div class="project-card tilt-element" data-intensity="8">
-          <div class="project-image"><img src="SRMS.png" height="210px" width="360px" alt="Student Management System"></div>
+          <div class="project-image"><img src="SRMS.png" height="210px" width="360px" alt="Student Management System">
+          </div>
           <div class="project-info">
             <h3 class="project-title">Student Management System</h3>
-            <p class="project-description">A Java-based application to manage student records with features like add, update, delete, and search functionality.</p>
+            <p class="project-description">A Java-based application to manage student records with features like add,
+              update, delete, and search functionality.</p>
             <div class="project-tags">
               <span class="tag">C</span>
               <span class="tag">CRUD</span>
@@ -200,14 +224,23 @@
         </div>
 
         <div class="project-card tilt-element" data-intensity="8">
-          <div class="project-image"><img src="portfolio2.png" height="210px" width="360px" alt="Portfolio Website"></div>
+          <div class="project-image"><img src="portfolio2.png" height="210px" width="360px" alt="Portfolio Website">
+          </div>
           <div class="project-info">
             <h3 class="project-title">Portfolio Website</h3>
-            <p class="project-description">A responsive personal portfolio website to showcase skills, projects, and contact information.</p>
+            <p class="project-description">A responsive personal portfolio website to showcase skills, projects, contact
+              information, and client reviews.</p>
             <div class="project-tags">
-              <span class="tag">HTML</span>
-              <span class="tag">CSS</span>
+              <span class="tag">MongoDB</span>
+              <span class="tag">Node.js</span>
+              <span class="tag">Express.js</span>
               <span class="tag">JavaScript</span>
+              <span class="tag">REST API</span>
+              <span class="tag">Mongoose</span>
+              <span class="tag">Responsive UI</span>
+              <span class="tag">EmailJS</span>
+              <span class="tag">Dark Mode</span>
+              <span class="tag">Local Storage</span>
             </div>
           </div>
         </div>
@@ -216,7 +249,8 @@
           <div class="project-image"><img src="gst2.png" height="210px" width="360px" alt="GST Billing System"></div>
           <div class="project-info">
             <h3 class="project-title">GST Billing System</h3>
-            <p class="project-description">A program that calculates total amount with GST, teaching me how to handle user input, calculations and formatted output suitable for simple billing scenarios.
+            <p class="project-description">A program that calculates total amount with GST, teaching me how to handle
+              user input, calculations and formatted output suitable for simple billing scenarios.
             <div class="project-tags">
               <span class="tag">C</span>
               <span class="tag">Formatted Output</span>
@@ -296,6 +330,134 @@
     </div>
   </section>
 
+
+  <!-- Reviews Section -->
+  <section id="Reviews" class="reviews-section">
+
+    <div class="container">
+
+      <div class="section-header">
+        <h2 class="section-title">Reviews & Ratings</h2>
+        <div class="section-underline"></div>
+      </div>
+
+      <div class="reviews-container">
+
+        <!-- Reviews Display -->
+        <div class="reviews-display" data-intensity="4">
+
+          <div id="reviewsList">
+
+            <div class="empty-review">
+              <h3>No Reviews Yet</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Form -->
+        <div class="review-form-card tilt-element" data-intensity="3">
+          <h3>Leave a Review</h3>
+
+          <form id="reviewForm">
+
+            <input type="text" id="reviewerName" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <select id="country" required>
+              <option value="">Select Country</option>
+              <option>Australia</option>
+              <option>Canada</option>
+              <option>France</option>
+              <option>Germany</option>
+              <option>India</option>
+              <option>Ireland</option>
+              <option>Israel</option>
+              <option>Italy</option>
+              <option>Netherlands</option>
+              <option>New Zealand</option>
+              <option>Philippines</option>
+              <option>Saudi Arabia</option>
+              <option>Singapore</option>
+              <option>South Africa</option>
+              <option>Sweden</option>
+              <option>Switzerland</option>
+              <option>United Arab Emirates (UAE)</option>
+              <option>United Kingdom</option>
+              <option>United States</option>
+              <option>Vietnam</option>
+              <option>Other</option>
+            </select>
+
+            <select id="service" required>
+              <option value="">Select Service</option>
+
+              <option>Software Development</option>
+              <option>Web Development</option>
+              <option>Frontend Development</option>
+              <option>Backend Development</option>
+              <option>Java Application Development</option>
+              <option>AI / Machine Learning Project</option>
+              <option>Research Paper Formatting (LaTeX)</option>
+              <option>Research Paper Writing Assistance</option>
+              <option>Book Formatting (LaTeX)</option>
+              <option>Technical Documentation</option>
+              <option>Academic Project</option>
+              <option>Bug Fixing & Debugging</option>
+              <option>Portfolio Website Development</option>
+              <option>UI / UX Design</option>
+              <option>Database Design</option>
+              <option>Other</option>
+            </select>
+
+            <textarea id="reviewText" rows="5" placeholder="Write your review..." required></textarea>
+
+            <!-- Would Recommend -->
+            <div class="form-group">
+              <label>Would you recommend me?</label>
+
+              <select id="recommend" required>
+                <option value="">Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div class="rating-box">
+
+              <label>Rating</label>
+
+              <div class="star-rating">
+
+                <input type="radio" id="star5" name="rating" value="5">
+                <label for="star5">★</label>
+
+                <input type="radio" id="star4" name="rating" value="4">
+                <label for="star4">★</label>
+
+                <input type="radio" id="star3" name="rating" value="3">
+                <label for="star3">★</label>
+
+                <input type="radio" id="star2" name="rating" value="2">
+                <label for="star2">★</label>
+
+                <input type="radio" id="star1" name="rating" value="1">
+                <label for="star1">★</label>
+
+              </div>
+
+            </div>
+            <button type="submit" class="submit-review-btn">
+              Submit Review
+            </button>
+            <div id="reviewMessage"></div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
   <!-- Contact Section -->
   <section id="contact">
     <div class="container">
@@ -305,12 +467,14 @@
       </div>
       <div class="contact-content">
         <div class="contact-info">
-          <p>I’m open to software developer opportunities, internships, and entry-level roles. 
+          <p>I’m open to software developer opportunities, internships, and entry-level roles.
             Feel free to reach out if you’d like to collaborate or discuss opportunities.</p>
           <div class="contact-details">
             <div class="contact-item tilt-element" data-intensity="5">
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                </path>
               </svg>
               <span>sttiwari9211@gmail.com</span>
             </div>
@@ -326,29 +490,27 @@
           <div class="social-links">
             <div class="social-label">CONNECT WITH ME</div>
             <div class="social-icons">
-              <a href="https://www.linkedin.com/in/satyam-tiwari-8s5a4t3y8a7m4104/" 
-                 class="social-icon" 
-                 target="_blank" 
-                 rel="noopener noreferrer">
+              <a href="https://www.linkedin.com/in/satyam-tiwari-8s5a4t3y8a7m4104/" class="social-icon" target="_blank"
+                rel="noopener noreferrer">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  <path
+                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                 </svg>
               </a>
 
-              <a href="https://github.com/satyamtiwari23"
-                 class="social-icon"
-                 target="_blank"
-                 rel="noopener noreferrer">
+              <a href="https://github.com/satyamtiwari23" class="social-icon" target="_blank" rel="noopener noreferrer">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  <path
+                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
               </a>
 
               <a href="mailto:sttiwari9211@gmail.com" class="social-icon" title="Email me" aria-label="Email me">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+                  <path
+                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
                 </svg>
-              </a>              
+              </a>
             </div>
           </div>
         </div>
@@ -357,17 +519,17 @@
             <label>NAME</label>
             <input type="text" name="from_name" placeholder="Your name" required>
           </div>
-        
+
           <div class="form-group">
             <label>EMAIL</label>
             <input type="email" name="from_email" placeholder="your.email@example.com" required>
           </div>
-        
+
           <div class="form-group">
             <label>MESSAGE</label>
             <textarea name="message" rows="6" placeholder="Your message..." required></textarea>
           </div>
-        
+
           <button type="submit" class="submit-button">Send Message</button>
           <div id="form-status" class="form-status"></div>
         </form>
@@ -379,10 +541,11 @@
   </section>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
-    (function(){
+    (function () {
       emailjs.init("xveZzrfHpZjEcv8o-");
     })();
   </script>
   <script src="script.js"></script>
 </body>
+
 </html>
