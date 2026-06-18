@@ -1613,7 +1613,11 @@ footer {
   }
 
   .review-card {
-    min-height: 430px;
-    max-height: 500px;
+    min-height: 320px;
+    max-height: 450px;
+  }
+  .review-text {
+    max-height: 120px;
+    overflow-y: auto;
   }
 }
