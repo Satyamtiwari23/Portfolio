@@ -1612,4 +1612,7 @@ footer {
     overflow-y: auto;
   }
 
+  .review-card {
+    min-height: 420px;
+  }
 }
