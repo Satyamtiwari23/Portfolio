@@ -1307,13 +1307,31 @@ footer {
 }
 
 .review-card .skill-tag {
+
   padding: 10px 16px;
 
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-secondary);
 
-  border-radius: 12px;
+  border: 1px solid var(--border-color);
 
-  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+
+  color: var(--text-primary);
+
+  transition: all 0.25s ease;
+
+  cursor: default;
+
+}
+
+.review-card .skill-tag:hover {
+
+  background: var(--text-primary);
+
+  color: var(--bg-primary);
+
+  border-color: var(--text-primary);
+
 }
 
 .review-text {
