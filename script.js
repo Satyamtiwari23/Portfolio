@@ -281,6 +281,13 @@ async function loadReviews() {
     const reviewsList =
       document.getElementById("reviewsList");
 
+    reviewsList.innerHTML = `
+  <div class="loading-reviews">
+      <div class="spinner"></div>
+      <p>Loading Reviews...</p>
+  </div>
+`;
+
     if (!reviews.length) {
       reviewsList.innerHTML =
         "<h3>No Reviews Yet</h3>";
