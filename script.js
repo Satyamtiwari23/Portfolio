@@ -274,13 +274,34 @@ async function loadReviews() {
     document.getElementById("reviewsList");
 
   reviewsList.innerHTML = `
-    <div class="loading-reviews">
-        <div class="spinner"></div>
-        <p>Loading Reviews...<br>
-        First load may take a few seconds</p>
-    </div>
-  `;
+  <div class="review-skeleton">
+      <div class="skeleton-title shimmer"></div>
 
+      <div class="skeleton-tags">
+          <div class="skeleton-tag shimmer"></div>
+          <div class="skeleton-tag shimmer"></div>
+          <div class="skeleton-tag shimmer"></div>
+      </div>
+
+      <div class="skeleton-line shimmer"></div>
+      <div class="skeleton-line shimmer"></div>
+      <div class="skeleton-line short shimmer"></div>
+  </div>
+
+  <div class="review-skeleton">
+      <div class="skeleton-title shimmer"></div>
+
+      <div class="skeleton-tags">
+          <div class="skeleton-tag shimmer"></div>
+          <div class="skeleton-tag shimmer"></div>
+          <div class="skeleton-tag shimmer"></div>
+      </div>
+
+      <div class="skeleton-line shimmer"></div>
+      <div class="skeleton-line shimmer"></div>
+      <div class="skeleton-line short shimmer"></div>
+  </div>
+`;
   try {
 
     const res = await fetch(
