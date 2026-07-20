@@ -1,12 +1,4 @@
-app.get("/", (req, res) => {
-  res.json({
-    status: "Online",
-    message: "Portfolio Backend is Running 🚀",
-    endpoints: {
-      reviews: "/api/reviews"
-    }
-  });
-});
+
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
