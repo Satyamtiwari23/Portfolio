@@ -12,6 +12,16 @@ app.use(cors());
 app.use(express.json());
 
 
+app.get("/", (req, res) => {
+    res.json({
+        status: "Online",
+        message: "Portfolio Backend is Running 🚀",
+        endpoints: {
+            reviews: "/api/reviews"
+        }
+    });
+});
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
