@@ -32,9 +32,10 @@ function initTilt() {
 
       element.style.transform =
         `perspective(1000px)
-       rotateX(${rotateX}deg)
-       rotateY(${rotateY}deg)
-       scale3d(1,1,1)`;
+         rotateX(${rotateX}deg)
+         rotateY(${rotateY}deg)
+         translateY(-2px)
+         scale(1.02)`;
 
     });
 
@@ -190,18 +191,18 @@ if (reviewForm) {
 
       const msg =
         document.getElementById("reviewMessage");
-    
+
       msg.className = "error";
       msg.style.display = "block";
       msg.textContent =
         "✗ Please select a rating before submitting.";
-    
+
       setTimeout(() => {
-    
+
         msg.style.display = "none";
-    
+
       }, 5000);
-    
+
       return;
     }
     const data = {
@@ -244,9 +245,9 @@ if (reviewForm) {
       msg.style.display = "block";
       msg.textContent = "✓ Review submitted successfully.";
       setTimeout(() => {
-          msg.style.display = "none";
+        msg.style.display = "none";
       }, 5000);
-      
+
       reviewForm.reset();
       await loadReviews();
 
@@ -260,7 +261,7 @@ if (reviewForm) {
       msg.style.display = "block";
       msg.textContent = "✗ Failed to submit review. Please try again.";
       setTimeout(() => {
-          msg.style.display = "none";
+        msg.style.display = "none";
       }, 5000);
     }
 

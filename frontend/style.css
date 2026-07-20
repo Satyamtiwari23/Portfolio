@@ -511,11 +511,22 @@ section {
   flex-direction: column;
 }
 
+.project-link{
+    text-decoration:none;
+    color:inherit;
+    display:block;
+}
+
+.project-link:hover{
+    color:inherit;
+}
+
 .project-card:hover {
   box-shadow: var(--shadow-2xl);
 }
 
 .project-image {
+  position: relative;
   aspect-ratio: 16/9;
   background: linear-gradient(to bottom right,
       var(--bg-secondary),
@@ -530,27 +541,149 @@ section {
   flex-shrink: 0;
 }
 
+.live-badge{
+
+    position:absolute;
+
+    top:12px;
+
+    left:12px;
+
+    height:32px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:0 14px;
+
+    border-radius:999px;
+
+    background:rgba(18,24,38,.78);
+
+    backdrop-filter:blur(10px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    color:#fff;
+
+    font-size:.75rem;
+
+    font-weight:600;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    z-index:20;
+
+    transition:all .35s ease;
+
+}
+
+.live-badge::before{
+
+    content:"";
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    box-shadow:
+        0 0 10px #22c55e,
+        0 0 18px rgba(34,197,94,.6);
+
+    flex-shrink:0;
+}
+
+.live-text{
+
+    max-width:0;
+
+    opacity:0;
+
+    overflow:hidden;
+
+    transition:all .35s ease;
+
+}
+
+.project-link:hover .live-badge{
+
+    padding-right:16px;
+
+}
+
+.project-link:hover .live-text{
+
+    max-width:160px;
+
+    opacity:1;
+
+    margin-left:4px;
+
+}
+
 .project-card:hover .project-image {
   background: linear-gradient(to bottom right,
       var(--bg-tertiary),
       #9ca3af);
 }
 
-.project-info {
-  padding: 1.5rem;
+.project-info{
 
-  display: flex;
-  flex-direction: column;
+    padding:1.2rem;
 
-  flex: 1;
+    display:flex;
 
-  min-height: 0;
+    flex-direction:column;
+
+    flex:1;
+
+    min-height:0;
+}
+
+.project-content{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    min-height:0;
+
+    padding-right:6px;
+    
+
+    scrollbar-width:thin;
+}
+
+.project-content::-webkit-scrollbar{
+
+    width:5px;
+}
+
+.project-content::-webkit-scrollbar-thumb{
+
+    background:rgba(120,120,120,.35);
+
+    border-radius:20px;
+}
+
+.project-content::-webkit-scrollbar-track{
+
+    background:transparent;
 }
 
 .project-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   transition: color 0.3s;
 }
 
@@ -564,41 +697,10 @@ section {
   line-height: 1.5;
 
   margin-bottom: 1rem;
-
-  flex-grow: 1;
-  /* THIS IS THE FIX */
 }
 
-/* TECHNOLOGY PILLS */
-.project-tags {
 
-  height: 85px;
 
-  overflow-y: auto;
-
-  display: flex;
-  flex-wrap: wrap;
-
-  gap: 0.5rem;
-
-  align-content: flex-start;
-
-  flex-shrink: 0;
-  /* IMPORTANT */
-
-  margin-top: 1rem;
-
-  padding-right: 5px;
-}
-
-.project-tags::-webkit-scrollbar {
-  width: 4px;
-}
-
-.project-tags::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, .2);
-  border-radius: 20px;
-}
 
 .tag {
   padding: 0.25rem 0.75rem;
@@ -614,30 +716,15 @@ section {
 }
 
 /* TECHNOLOGY SECTION */
-.project-tags {
+.project-tags{
 
-  height: 85px;
-  /* FIXED RECTANGLE */
+    display:flex;
 
-  overflow-y: auto;
+    flex-wrap:wrap;
 
-  display: flex;
-  flex-wrap: wrap;
+    gap:.5rem;
 
-  gap: 0.5rem;
-
-  align-content: flex-start;
-
-  padding-right: 5px;
-}
-
-.project-tags::-webkit-scrollbar {
-  width: 4px;
-}
-
-.project-tags::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, .2);
-  border-radius: 20px;
+    margin-top:18px;
 }
 
 .tag {
