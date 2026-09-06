@@ -45,7 +45,7 @@ A portfolio shouldn't just list projects — it should demonstrate full-stack ab
 
 ### ⭐ Reviews & Ratings (full-stack)
 - Visitors submit name, email, country, service type, star rating, and a written review
-- Reviews persist to MongoDB via a REST API and render dynamically with skeleton loading states
+- Reviews persist to MongoDB via a REST API and vercel dynamically with skeleton loading states
 - Client-side validation (required rating selection, email format) with success/error messaging
 
 ### 📬 Contact
@@ -86,7 +86,7 @@ Frontend->>Express API: GET /api/reviews
 Express API->>MongoDB: Fetch reviews (sorted by date)
 MongoDB-->>Express API: Review list
 Express API-->>Frontend: JSON reviews
-Frontend-->>Visitor: Render review cards
+Frontend-->>Visitor: Vercel review cards
 ```
 
 ---
@@ -101,7 +101,7 @@ Frontend-->>Visitor: Render review cards
 
 **Middleware** — CORS, express-rate-limit, dotenv
 
-**Deployment** — Render (backend API), GitHub Pages (frontend)
+**Deployment** — Vercel (backend API), GitHub Pages (frontend)
 
 ---
 
@@ -176,9 +176,9 @@ The frontend (`index.html`, `style.css`, `script.js`) is static — open `index.
 
 ## ☁️ Deployment Guide
 
-**Backend (Render)**
+**Backend (Vercel)**
 1. Push the project to GitHub
-2. Create a Render Web Service connected to the repo
+2. Create a Vercel Web Service connected to the repo
 3. Configure:
    - **Build Command:** `npm install`
    - **Start Command:** `node server.js`
@@ -188,7 +188,7 @@ The frontend (`index.html`, `style.css`, `script.js`) is static — open `index.
 **Frontend (GitHub Pages)**
 1. Push the frontend files to a GitHub repository
 2. Enable GitHub Pages on the `main` branch (root or `/docs`)
-3. Update API endpoint URLs in `script.js` to the deployed Render backend URL
+3. Update API endpoint URLs in `script.js` to the deployed Vercel backend URL
 
 ---
 
