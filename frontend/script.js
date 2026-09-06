@@ -225,7 +225,7 @@ if (reviewForm) {
     try {
 
       const res = await fetch(
-        "https://portfolio-backend-4g3y.onrender.com/api/reviews",
+        "https://portfolio-beryl-delta-52.vercel.app/api/reviews",
         {
           method: "POST",
           headers: {
@@ -306,7 +306,7 @@ async function loadReviews() {
   try {
 
     const res = await fetch(
-      "https://portfolio-backend-4g3y.onrender.com/api/reviews"
+      "https://portfolio-beryl-delta-52.vercel.app/api/reviews"
     );
 
     const reviews = await res.json();
