@@ -523,28 +523,44 @@ section {
 
 
 .project-github {
+  flex-shrink: 0;
+  padding-top: 12px;
+  background:transparent;
     display: flex;
     justify-content: center;
-    margin-top: 16px;
+    margin-top: -1px;
+    margin-bottom: -11px;
     width: 100%;
 }
 
 .github-btn {
     width: 100%;
     padding: 9px 18px;
-    border: 1px solid var(--border-color);
-    border-radius: 999px;   /* same pill shape as skills */
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+
+    /* Glass effect */
     background: transparent;
-    color: var(--text-primary);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    color: white;
     font-size: 0.85rem;
     font-weight: 600;
+
     cursor: pointer;
-    transition: all 0.25s ease;
+
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.25s ease;
 }
 
 .github-btn:hover {
-    background: var(--bg-tertiary);
-    transform: translateY(-2px);
+    background: transparent;
+    border-color: transparent;
+    transform: translateY(-1px);
 }
 
 .project-card:hover {
@@ -669,7 +685,7 @@ section {
     display:flex;
 
     flex-direction:column;
-
+    position: relative;
     flex:1;
 
     min-height:0;
@@ -682,7 +698,7 @@ section {
     overflow-y:auto;
 
     min-height:0;
-
+     overflow-x: hidden;
     padding-right:6px;
     
 
@@ -691,19 +707,21 @@ section {
 
 .project-content::-webkit-scrollbar{
 
-    width:5px;
+    width:4px;
 }
 
 .project-content::-webkit-scrollbar-thumb{
-
-    background:rgba(120,120,120,.35);
-
-    border-radius:20px;
+  background: rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
 }
 
 .project-content::-webkit-scrollbar-track{
 
     background:transparent;
+}
+
+.project-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .project-title {
