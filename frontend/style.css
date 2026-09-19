@@ -521,6 +521,32 @@ section {
     color:inherit;
 }
 
+
+.project-github {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    width: 100%;
+}
+
+.github-btn {
+    width: 100%;
+    padding: 9px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;   /* same pill shape as skills */
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.github-btn:hover {
+    background: var(--bg-tertiary);
+    transform: translateY(-2px);
+}
+
 .project-card:hover {
   box-shadow: var(--shadow-2xl);
 }
