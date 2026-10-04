@@ -1913,3 +1913,73 @@ footer {
   font-size: 0.9rem;
   line-height: 1.6;
 }
+
+/* Verified Client */
+.review-card .skill-category {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+
+
+.review-card .verified-client-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #22c55e;
+    font-size: 0.78rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.review-card .verified-client-badge::before {
+    content: "✓";
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 17px;
+    height: 17px;
+
+    background: #22c55e;
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+
+    clip-path: polygon(
+        50% 0%,
+        61% 8%,
+        74% 4%,
+        81% 15%,
+        94% 19%,
+        93% 32%,
+        100% 42%,
+        92% 52%,
+        96% 65%,
+        84% 71%,
+        81% 84%,
+        68% 82%,
+        58% 94%,
+        48% 87%,
+        36% 96%,
+        29% 83%,
+        16% 84%,
+        15% 71%,
+        3% 65%,
+        8% 52%,
+        0% 42%,
+        8% 32%,
+        6% 19%,
+        19% 15%,
+        26% 4%,
+        39% 8%
+    );
+
+    flex-shrink: 0;
+}

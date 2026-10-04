@@ -335,44 +335,45 @@ async function loadReviews() {
     reviews.forEach(review => {
 
       reviewsList.innerHTML += `
-    
-            <div class="review-card tilt-element"
-                 data-intensity="8">
-    
-                <h3 class="skill-category">
-                    ${review.name}
-                </h3>
-    
-                <div class="skill-list">
-    
-                    <span class="skill-tag">
-                        ${review.country}
-                    </span>
-    
-                    <span class="skill-tag">
-                        ${review.service}
-                    </span>
-    
-                    <span class="skill-tag">
-                        ⭐ ${review.rating}/5
-                    </span>
-                    ${review.verifiedClient? `
-                        <span class="skill-tag verified-badge">
-                            ✓ Verified Client
-                        </span>
-                      `
-                      : ""
-        }
-    
-                </div>
-    
-                <p class="review-text">
-                    "${review.review}"
-                </p>
-    
-            </div>
-    
-          `;
+
+        <div class="review-card tilt-element"
+     data-intensity="8">
+
+    <h3 class="skill-category">
+
+        ${review.name}
+
+        ${review.verifiedClient ? `
+            <span class="verified-client-badge">
+                Verified Client 
+            </span>
+        ` : ""}
+
+    </h3>
+
+    <div class="skill-list">
+
+        <span class="skill-tag">
+            ${review.country}
+        </span>
+
+        <span class="skill-tag">
+            ${review.service}
+        </span>
+
+        <span class="skill-tag">
+            ⭐ ${review.rating}/5
+        </span>
+
+    </div>
+
+    <p class="review-text">
+        "${review.review}"
+    </p>
+
+</div>
+
+    `;
 
     });
 
