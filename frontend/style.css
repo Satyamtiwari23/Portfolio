@@ -1898,3 +1898,18 @@ footer {
 }
 
 }
+
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.reviews-verification-note {
+  margin-top: 25px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}

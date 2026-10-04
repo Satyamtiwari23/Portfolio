@@ -356,6 +356,13 @@ async function loadReviews() {
                     <span class="skill-tag">
                         ⭐ ${review.rating}/5
                     </span>
+                    ${review.verifiedClient? `
+                        <span class="skill-tag verified-badge">
+                            ✓ Verified Client
+                        </span>
+                      `
+                      : ""
+        }
     
                 </div>
     
