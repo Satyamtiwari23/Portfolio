@@ -537,7 +537,7 @@ section {
     width: 100%;
     padding: 9px 18px;
 
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
 
     /* Glass effect */
@@ -545,7 +545,7 @@ section {
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
 
-    color: white;
+    color: var(--text-primary);
     font-size: 0.85rem;
     font-weight: 600;
 
@@ -558,8 +558,8 @@ section {
 }
 
 .github-btn:hover {
-    background: transparent;
-    border-color: transparent;
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
     transform: translateY(-1px);
 }
 
