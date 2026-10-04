@@ -37,7 +37,15 @@ app.post("/api/reviews", async (req, res) => {
 
     try {
 
-        const { email } = req.body;
+        const {
+            name,
+            email,
+            country,
+            service,
+            review: reviewText,
+            rating,
+            recommend
+        } = req.body;
 
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,13 +57,27 @@ app.post("/api/reviews", async (req, res) => {
             });
         }
 
-        const review = new Review(req.body);
+        const review = new Review({
+
+            name,
+            email,
+            country,
+            service,
+            review: reviewText,
+            rating,
+            recommend,
+
+            // These are controlled by the server
+            verifiedClient: false,
+            approved: false
+
+        });
 
         await review.save();
 
         res.status(201).json({
             success: true,
-            message: "Review Saved"
+            message: "Review submitted and is pending verification."
         });
 
     } catch (err) {
@@ -63,7 +85,8 @@ app.post("/api/reviews", async (req, res) => {
         console.log(err);
 
         res.status(500).json({
-            success: false
+            success: false,
+            message: "Failed to save review"
         });
 
     }
@@ -72,10 +95,26 @@ app.post("/api/reviews", async (req, res) => {
 
 app.get("/api/reviews", async (req, res) => {
 
-    const reviews = await Review.find({})
+    try {
+
+        const reviews = await Review.find({
+            verifiedClient: true,
+            approved: true
+        })
         .sort({ createdAt: -1 });
 
-    res.json(reviews);
+        res.json(reviews);
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to load reviews"
+        });
+
+    }
 
 });
 

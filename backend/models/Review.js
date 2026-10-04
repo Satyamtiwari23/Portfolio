@@ -19,6 +19,11 @@ const reviewSchema = new mongoose.Schema({
 
     recommend: String,
 
+    verifiedClient: {
+        type: Boolean,
+        default: false
+    },
+
     approved: {
         type: Boolean,
         default: false
