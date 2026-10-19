@@ -91,6 +91,10 @@
       <div class="term-bar">
         <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="term-title">satyam@portfolio: ~</span>
+        <button type="button" class="term-zoom" aria-label="Zoom in the terminal" aria-pressed="false" title="Zoom (Esc to exit)">
+          <svg class="ic-expand" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+          <svg class="ic-collapse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></svg>
+        </button>
       </div>
       <div class="term-body" id="termBody">
         <div class="term-out" role="log" aria-live="polite" aria-label="Terminal output"></div>
@@ -200,10 +204,17 @@
     },
 
     hire() {
-      setTimeout(() => {
+      // Runs after the message has been printed: hold it for a moment,
+      // fade it out slowly, THEN take the visitor to the contact form.
+      afterPrint = async els => {
+        await sleep(1000);
+        els.forEach(el => el.classList.add('is-fading'));
+        await sleep(1000);
+        els.forEach(el => el.remove());
+        setZoom(false); // a zoomed terminal locks page scroll, so close it first
         const c = document.getElementById('contact');
         if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 900);
+      };
       return [ok('Great decision 😄'), dim('Taking you to the contact form...')];
     },
 
@@ -218,11 +229,6 @@
       if (!g) return [err('Bug hunt is not loaded on this page.')];
       const flag = args[0];
 
-      if (flag === '--secret') {
-        return g.squash(6)
-          ? [ok('✔ Bug #6 squashed. Nice find.')]
-          : [dim('Bug #6 is already fixed.')];
-      }
       if (flag === 'off') { g.setHidden(true); return [dim('Game hidden. Type "debug on" to bring it back.')]; }
       if (flag === 'on') { g.setHidden(false); return [ok('Game visible again.')]; }
       if (flag === 'stats') {
@@ -313,6 +319,7 @@
   const history = [];
   let histIdx = 0;
   let busy = false;
+  let afterPrint = null; // optional step a command can queue to run right after its output
 
   async function run(raw) {
     busy = true;
@@ -334,7 +341,13 @@
       } else if (cmd === 'clear' || cmd === 'cls') {
         out.innerHTML = '';
       } else if (Object.prototype.hasOwnProperty.call(COMMANDS, cmd)) {
-        await print(COMMANDS[cmd](args));
+        const before = out.children.length;
+        await print(withBug(cmd, COMMANDS[cmd](args)));
+        if (afterPrint) {
+          const fn = afterPrint;
+          afterPrint = null;
+          await fn([...out.children].slice(before)); // the lines this command just printed
+        }
       } else {
         const lines = [err('command not found: ') + esc(cmd) + dim(". Type 'help'.")];
         const s = suggest(cmd);
@@ -364,6 +377,89 @@
 
   /* ---------------------------------------------------------
      EVENTS
+  --------------------------------------------------------- */
+  /* ---------------------------------------------------------
+     ZOOM  (big terminal on top of the page; Esc, backdrop click
+     or the same icon closes it)
+  --------------------------------------------------------- */
+  const zoomBtn = root.querySelector('.term-zoom');
+  let backdrop = null;
+
+  function setZoom(on) {
+    if (on === win.classList.contains('is-zoomed')) return;
+
+    if (on) {
+      // keep the page height stable while the window floats above it
+      root.style.minHeight = win.offsetHeight + 'px';
+      backdrop = document.createElement('div');
+      backdrop.className = 'term-backdrop';
+      backdrop.addEventListener('click', () => setZoom(false));
+      document.body.appendChild(backdrop);
+      win.classList.add('is-zoomed');
+      document.documentElement.classList.add('term-lock');
+    } else {
+      win.classList.remove('is-zoomed');
+      root.style.minHeight = '';
+      if (backdrop) { backdrop.remove(); backdrop = null; }
+      document.documentElement.classList.remove('term-lock');
+    }
+
+    zoomBtn.setAttribute('aria-pressed', String(on));
+    zoomBtn.setAttribute('aria-label', on ? 'Exit zoom' : 'Zoom in the terminal');
+    scrollDown();
+    if (on) input.focus({ preventScroll: true }); else zoomBtn.focus({ preventScroll: true });
+  }
+
+  zoomBtn.addEventListener('click', () => setZoom(!win.classList.contains('is-zoomed')));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && win.classList.contains('is-zoomed')) setZoom(false);
+  });
+
+  /* ---------------------------------------------------------
+     HIDDEN BUG INSIDE A REPLY
+     The game decides which command hides the 🐛 this run.
+     We add it to one random line of that command's output.
+  --------------------------------------------------------- */
+  const BUG_HTML = '<span class="term-bug" role="button" tabindex="0" aria-label="Hidden bug. Activate to squash it.">🐛</span>';
+
+  function withBug(cmd, lines) {
+    const g = window.DebugGame;
+    if (!g || !g.terminalBug || g.terminalBug() !== cmd || !Array.isArray(lines)) return lines;
+    const spots = lines.map((l, i) => (l ? i : -1)).filter(i => i >= 0);
+    if (!spots.length) return lines;
+    const pick = spots[Math.floor(Math.random() * spots.length)];
+    const copy = lines.slice();
+    copy[pick] = copy[pick] + ' ' + BUG_HTML;
+    return copy;
+  }
+
+  function squashTermBug() {
+    const g = window.DebugGame;
+    if (!g) return;
+    const bugs = out.querySelectorAll('.term-bug');
+    bugs.forEach(b => b.classList.add('is-squashed'));
+    g.squash('secret');
+    setTimeout(() => bugs.forEach(b => b.remove()), 350);
+  }
+
+  out.addEventListener('click', e => {
+    if (e.target.closest('.term-bug')) {
+      e.preventDefault();
+      e.stopPropagation();
+      squashTermBug();
+    }
+  });
+
+  out.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('term-bug')) {
+      e.preventDefault();
+      squashTermBug();
+    }
+  });
+
+  /* ---------------------------------------------------------
+     INPUT
   --------------------------------------------------------- */
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') {

@@ -44,6 +44,7 @@
 .term-dots {
   display: flex;
   gap: 8px;
+  min-width: 56px; /* same width as the zoom button, keeps the title centered */
 }
 
 .term-dots i {
@@ -62,8 +63,6 @@
   text-align: center;
   font-size: 0.8rem;
   color: #64748b;
-  /* balances the dots so the title is visually centered */
-  margin-right: 44px;
 }
 
 /* ---------- body ---------- */
@@ -180,4 +179,134 @@
   .term-sub {
     font-size: 0.95rem;
   }
+}
+
+
+/* =========================================================
+   ZOOM ICON + ZOOMED WINDOW
+   ========================================================= */
+.term-zoom {
+  min-width: 56px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.term-zoom:hover { color: #fff; }
+.term-zoom:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+
+.term-zoom .ic-collapse { display: none; }
+.term-window.is-zoomed .term-zoom .ic-expand { display: none; }
+.term-window.is-zoomed .term-zoom .ic-collapse { display: block; }
+
+/* dim page behind the zoomed terminal.
+   z-index order: nav 1000 < zoomed terminal 1050 < game toast 1100 < vault 2000 */
+.term-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+html.term-lock {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+.term-window.is-zoomed {
+  position: fixed;
+  top: 5vh;
+  left: 0;
+  right: 0;
+  height: 90vh;
+  width: min(1100px, 92vw);
+  max-width: none;
+  margin: 0 auto;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+}
+
+.term-window.is-zoomed .term-body {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .term-window.is-zoomed {
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+}
+
+/* =========================================================
+   HIDDEN BUG INSIDE A TERMINAL REPLY
+   ========================================================= */
+.term-bug {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  animation: termBugWiggle 3.5s infinite;
+}
+
+/* bigger tap area on phones */
+.term-bug::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+}
+
+.term-bug:hover { opacity: 1; }
+.term-bug:focus-visible { outline: 2px solid #f59e0b; outline-offset: 3px; border-radius: 4px; }
+
+.term-bug.is-squashed {
+  pointer-events: none;
+  animation: termBugPop 0.35s ease forwards;
+}
+
+@keyframes termBugWiggle {
+  0%, 85%, 100% { transform: rotate(0); }
+  89% { transform: rotate(-16deg) translateX(-2px); }
+  93% { transform: rotate(14deg) translateX(2px); }
+  97% { transform: rotate(-6deg); }
+}
+
+@keyframes termBugPop {
+  0% { transform: scale(1); opacity: 1; }
+  40% { transform: scale(1.6); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .term-bug { animation: none; }
+}
+
+/* =========================================================
+   FADE-OUT (used by the `hire` command before it redirects)
+   ========================================================= */
+.term-line {
+  transition: opacity 1.6s ease;
+}
+
+.term-line.is-fading {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .term-line { transition: none; }
 }

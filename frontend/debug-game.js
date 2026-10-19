@@ -1,9 +1,14 @@
 /* =========================================================
-   DEBUG THE PORTFOLIO  (v2: shuffled bugs, speedrun, ranks)
+   DEBUG THE PORTFOLIO  (v3: every run is unique)
 
-   - 12 bug spots live on the page, plus 1 secret bug (terminal/Konami).
-     Every run picks 5 random page spots + the secret one = 6 bugs.
-   - "Play again" starts a fresh run with a different set.
+   - 15 bug spots live on the page. Each run picks 5 of them at random.
+   - The 6th bug hides inside one of the TERMINAL's replies (help, about,
+     skills, projects, contact or resume). Which one changes every run.
+     Visitors just click the terminal buttons and watch for a 🐛.
+   - Inside a run, bugs are seeded: reloading the page keeps them in the
+     same place. A new run gets a new seed, so the exact letter, chip,
+     garbled text and note are different every time.
+   - Tips / jokes never repeat until all of them have been shown once.
    - Best time is saved; ranks come from wins + speed.
    - The free-chat reward is unlocked on the FIRST win only.
 
@@ -18,7 +23,7 @@
      CONFIG
   --------------------------------------------------------- */
   const CONFIG = {
-    storageKey: 'dbgGame.v2',
+    storageKey: 'dbgGame.v3',
     siteUrl: 'https://satyamtiwari23.github.io/Portfolio/',
     enableKonami: true,
 
@@ -44,11 +49,14 @@
     }
   };
 
-  const RUN_SIZE = 5; // random page bugs per run (+1 secret = 6)
+  const RUN_SIZE = 5; // random page bugs per run (+1 in the terminal = 6)
+
+  // Terminal replies that can hide the 6th bug (all have a clickable button under the terminal).
+  const TERM_CMDS = ['help', 'about', 'skills', 'projects', 'contact', 'resume'];
 
   const RANKS = ['Intern Debugger', 'Junior Debugger', 'Senior Debugger', 'Principal Debugger'];
 
-  // Random tips / facts / jokes: one is shown each time a bug is squashed.
+  // Shown one at a time when a bug is squashed. Never repeats until all have been seen.
   const REWARDS = [
     '🧠 The first computer "bug" was a real moth found in Harvard\'s Mark II in 1947.',
     '💡 JS tip: user?.name ?? "Guest" handles missing values in one line.',
@@ -63,7 +71,43 @@
     '📄 LaTeX tip: \\usepackage{microtype} quietly improves spacing across the whole document.',
     '😄 There are 10 types of people: those who understand binary and those who don\'t.',
     '💡 Console tip: console.table(array) prints objects as a readable table.',
-    '😅 "It works on my machine." Famous last words.'
+    '😅 "It works on my machine." Famous last words.',
+    '💡 JS tip: [...new Set(arr)] removes duplicates from an array.',
+    '💡 Git tip: git stash saves your messy work so you can switch branches safely.',
+    '🎨 CSS tip: gap works in flexbox too, so you can skip the margin hacks.',
+    '🐍 Python tip: f"{value:.2f}" formats a number to 2 decimals.',
+    '📚 Big-O tip: a hash map lookup is O(1) on average, which is why it fixes so many slow loops.',
+    '🌐 The first website went live in 1991.',
+    '😄 Why did the developer go broke? He used up all his cache.',
+    '📄 LaTeX tip: put \\label right after \\caption so cross-references point at the right figure.',
+    '♿ HTML tip: a <button> is keyboard-accessible for free. A clickable <div> is not.',
+    '⌨️ Shortcut: Ctrl+Shift+P (Cmd+Shift+P on Mac) opens the command palette in VS Code.',
+    '☕ Java tip: use StringBuilder instead of += when you build strings in a loop.',
+    '😄 A bug is just a feature with no documentation.',
+    '🔍 Debugging tip: change one thing at a time, or you never learn what fixed it.',
+    '🐍 Python tip: use "with open(...)" so files always close, even when something crashes.',
+    '💡 JS tip: === avoids the surprises of == type coercion.',
+    '🐍 Python is named after Monty Python, not the snake.',
+    '😄 To understand recursion, you must first understand recursion.',
+    '🎨 CSS tip: clamp(1rem, 2.5vw, 2rem) gives fluid font sizes without media queries.',
+    '🍃 MongoDB tip: an index on the field you filter by can turn a slow query into an instant one.',
+    '💡 Git tip: git commit --amend fixes your last commit message before you push.'
+  ];
+
+  const FOOTER_NOTES = [
+    '<!-- TODO: fix this bug -->',
+    '// TODO: remove before launch',
+    '/* FIXME: why does this work? */',
+    '# HACK: do not touch',
+    '<!-- who wrote this?? -->',
+    '// TODO: delete this later (never)'
+  ];
+
+  const TERMINAL_NOTES = [
+    '// FIXME: terminal leaks bugs',
+    '$ git blame --who-did-this',
+    '// TODO: add more easter eggs',
+    '# temporary fix, will clean up later'
   ];
 
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -75,33 +119,72 @@
     return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   };
 
-  const shuffle = arr => {
+  /* ---------------------------------------------------------
+     SEEDED RANDOM  (same seed -> same bugs after a page reload)
+  --------------------------------------------------------- */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function hashStr(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  const shuffle = (arr, rng) => {
+    const rand = rng || Math.random;
     const r = arr.slice();
     for (let i = r.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(rand() * (i + 1));
       [r[i], r[j]] = [r[j], r[i]];
     }
     return r;
   };
 
+  const pickFrom = (arr, rng) => arr[Math.floor(rng() * arr.length)];
+
   /* ---------------------------------------------------------
-     BUG BUILDERS
+     BUG BUILDERS   (mount(rng) -> the clickable element, or null)
   --------------------------------------------------------- */
-  // Wrap one letter of a word in a glitching span (inside the first matching element).
-  function wrapLetter(selector, word, idx) {
-    const nodes = document.querySelectorAll(selector);
-    for (const node of nodes) {
-      if (node.innerHTML.includes(word)) {
-        node.innerHTML = node.innerHTML.replace(
-          word,
-          word.slice(0, idx) + '<span class="dbg-letter" data-dbg-new>' + word[idx] + '</span>' + word.slice(idx + 1)
-        );
-        const el = node.querySelector('[data-dbg-new]');
-        if (el) el.removeAttribute('data-dbg-new');
-        return el;
+  // Glitch ONE random letter inside the text of the matching elements.
+  function randomLetter(selector, rng) {
+    const cands = [];
+    document.querySelectorAll(selector).forEach(root => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = walker.nextNode())) {
+        if (n.parentElement && n.parentElement.closest('.dbg-bug')) continue;
+        const re = /[A-Za-z]{6,}/g;
+        let m;
+        while ((m = re.exec(n.nodeValue))) cands.push({ node: n, index: m.index, word: m[0] });
       }
-    }
-    return null;
+    });
+    if (!cands.length) return null;
+
+    const c = pickFrom(cands, rng);
+    // skip the first and last letter of the word, so it reads naturally
+    const pos = c.index + 1 + Math.floor(rng() * (c.word.length - 2));
+    const text = c.node.nodeValue;
+
+    const span = document.createElement('span');
+    span.className = 'dbg-letter';
+    span.textContent = text[pos];
+
+    const parent = c.node.parentNode;
+    const after = document.createTextNode(text.slice(pos + 1));
+    c.node.nodeValue = text.slice(0, pos);
+    parent.insertBefore(span, c.node.nextSibling);
+    parent.insertBefore(after, span.nextSibling);
+    return span;
   }
 
   // A small 🐛 pinned inside a container.
@@ -125,9 +208,25 @@
     return el;
   }
 
-  const letterBug = (id, section, selector, word, idx, hint) => ({
-    id, section, hint, mode: 'restore',
-    mount() { return wrapLetter(selector, word, idx); }
+  const LOOKALIKE = { a: '@', e: '3', i: '!', o: '0', s: '$', l: '1', t: '7', b: '8', g: '9' };
+
+  // "Problem Solving" -> something like "Pr0blem $olving", different each run.
+  function garble(text, rng) {
+    const chars = [...text];
+    const spots = shuffle(
+      chars.map((c, i) => (LOOKALIKE[c.toLowerCase()] ? i : -1)).filter(i => i >= 0),
+      rng
+    );
+    if (!spots.length) return text + ' ?!';
+    const count = Math.min(spots.length, 2 + Math.floor(rng() * 2));
+    for (let k = 0; k < count; k++) chars[spots[k]] = LOOKALIKE[chars[spots[k]].toLowerCase()];
+    return chars.join('');
+  }
+
+  const letterBug = (id, section, selector, where) => ({
+    id, section, mode: 'restore',
+    hint: `A letter in the ${where} glitches every few seconds. Read closely.`,
+    mount(rng) { return randomLetter(selector, rng); }
   });
 
   const iconBug = (id, section, hint, getHost, extraClass) => ({
@@ -135,30 +234,34 @@
     mount() { return iconIn(getHost(), extraClass); }
   });
 
-  const chipBug = (id, section, text, garbled, hint) => ({
-    id, section, hint, mode: 'restore', garbled,
-    mount() {
-      const chip = [...document.querySelectorAll('#skills .skill-tag')]
-        .find(c => c.textContent.trim() === text && !c.dataset.orig);
-      if (!chip) return null;
-      chip.dataset.orig = chip.textContent;
-      chip.textContent = garbled;
+  const chipBug = (id, hint) => ({
+    id, section: 'Skills', hint, mode: 'restore',
+    mount(rng) {
+      const chips = [...document.querySelectorAll('#skills .skill-tag')]
+        .filter(c => !c.dataset.orig && c.textContent.trim().length >= 3);
+      if (!chips.length) return null;
+      const chip = pickFrom(chips, rng);
+      const original = chip.textContent;
+      chip.dataset.orig = original;
+      chip.dataset.garbled = garble(original.trim(), rng);
+      chip.textContent = chip.dataset.garbled;
       chip.classList.add('dbg-garbled');
       return chip;
     },
     restore(el) { el.textContent = el.dataset.orig; },
-    setVisible(el, on) { el.textContent = on ? garbled : el.dataset.orig; }
+    setVisible(el, on) { el.textContent = on ? el.dataset.garbled : el.dataset.orig; }
   });
 
   /* ---------------------------------------------------------
-     THE POOL: 12 spots on the page
+     THE POOL: 15 spots on the page
   --------------------------------------------------------- */
   const POOL = [
-    letterBug('about-letter', 'About', '#about .about-text p', 'scalability', 4,
-      'A letter in the About text glitches every few seconds.'),
-
-    letterBug('projects-letter', 'Projects', '#projects .section-title', 'Projects', 3,
-      'A letter in the "Featured Projects" heading glitches. Watch the title.'),
+    letterBug('about-letter', 'About', '#about .about-text p', 'About text'),
+    letterBug('projects-letter', 'Projects', '#projects .section-title', '"Featured Projects" heading'),
+    letterBug('skills-letter', 'Skills', '#skills .section-title', 'Skills heading'),
+    letterBug('reviews-letter', 'Reviews', '#Reviews .section-title', 'Reviews heading'),
+    letterBug('contact-letter', 'Contact', '#contact .contact-info p', 'Get In Touch text'),
+    letterBug('terminal-letter', 'Terminal', '#terminal .term-sub', 'line under "Ask Me Anything"'),
 
     iconBug('project-icon-a', 'Projects',
       'The first project card has an uninvited guest in its top corner.',
@@ -169,11 +272,8 @@
       'Look at the image of the last project card.',
       () => { const c = document.querySelectorAll('#projects .project-card'); const l = c[c.length - 1]; return l && l.querySelector('.project-image'); }),
 
-    chipBug('skills-chip-ps', 'Skills', 'Problem Solving', 'Pr0bl3m $olv!ng',
-      'A skill chip in Core Skills looks corrupted.'),
-
-    chipBug('skills-chip-rest', 'Skills', 'REST API', 'R3ST @P!',
-      'A skill chip under Backend looks corrupted.'),
+    chipBug('skills-chip-a', 'One of the skill chips looks corrupted. Check all the cards.'),
+    chipBug('skills-chip-b', 'Another skill chip looks corrupted. Check all the cards.'),
 
     {
       id: 'reviews-dot', section: 'Reviews', mode: 'remove',
@@ -186,19 +286,16 @@
       () => $('.review-form-card'),
       'dbg-icon-tr'),
 
-    letterBug('contact-letter', 'Contact', '#contact .contact-info p', 'collaborate', 4,
-      'A letter glitches in the Get In Touch text.'),
-
     {
       id: 'footer-todo', section: 'Footer', mode: 'remove',
-      hint: 'Someone left a TODO in the footer.',
-      mount() { return appendText($('footer'), 'dbg-code', '<!-- TODO: fix this bug -->'); }
+      hint: 'Someone left a forgotten note in the footer.',
+      mount(rng) { return appendText($('footer'), 'dbg-code', pickFrom(FOOTER_NOTES, rng)); }
     },
 
     {
       id: 'terminal-todo', section: 'Terminal', mode: 'remove',
-      hint: 'The "Ask Me Anything" heading has a forgotten comment under it.',
-      mount() { return appendText($('#terminal .section-header'), 'dbg-code', '// FIXME: terminal leaks bugs'); }
+      hint: 'The "Ask Me Anything" heading has a forgotten note under it.',
+      mount(rng) { return appendText($('#terminal .section-header'), 'dbg-code', pickFrom(TERMINAL_NOTES, rng)); }
     },
 
     iconBug('nav-icon', 'Navbar',
@@ -207,10 +304,10 @@
       'dbg-icon-nav')
   ];
 
-  // The 6th bug is not on the page: terminal command or Konami code.
+  // The 6th bug hides in a terminal reply (terminal.js draws it; Konami works too).
   const SECRET = {
     id: 'secret', section: 'Terminal', mode: 'none',
-    hint: 'Not on the page. It hides where typists and gamers look. Try "debug --secret" in the terminal, or a classic cheat code.',
+    hint: 'Not on the page itself. Open the terminal, press its buttons (help, about, skills...) and watch the replies for a 🐛.',
     mount() { return null; }
   };
 
@@ -222,12 +319,15 @@
   --------------------------------------------------------- */
   const blank = () => ({
     run: null,          // ids of this run's page bugs
+    seed: 0,            // makes this run's bugs unique, and stable across reloads
+    termCmd: 'help',    // which terminal reply hides the 6th bug
     found: [],          // ids found in this run
     elapsed: 0,
     last: null,
     end: null,
     hidden: false,
     hinted: false,
+    seen: [],           // tips already shown (so they never repeat)
     wins: 0,
     best: null,         // fastest win, in ms
     newBest: false,     // did the latest win set a record?
@@ -235,15 +335,20 @@
     announce: false     // show a "new run" toast after Play again
   });
 
-  function pickRun(prev) {
+  function newRun(prevRun, prevTerm) {
     const ids = POOL.map(b => b.id);
     let pick = shuffle(ids).slice(0, RUN_SIZE);
     for (let i = 0; i < 20; i++) {
-      const overlap = prev ? pick.filter(x => prev.includes(x)).length : 0;
+      const overlap = prevRun ? pick.filter(x => prevRun.includes(x)).length : 0;
       if (overlap <= 2) break; // make replays feel fresh
       pick = shuffle(ids).slice(0, RUN_SIZE);
     }
-    return pick;
+    const cmds = TERM_CMDS.filter(c => c !== prevTerm);
+    return {
+      run: pick,
+      seed: Math.floor(Math.random() * 4294967296),
+      termCmd: pickFrom(cmds, Math.random)
+    };
   }
 
   function load() {
@@ -253,14 +358,19 @@
       if (saved && typeof saved === 'object') s = Object.assign(s, saved);
     } catch (e) { /* storage blocked or corrupt: start fresh */ }
 
-    if (!Array.isArray(s.run) || s.run.length === 0 || !s.run.every(id => BY_ID[id] && id !== 'secret')) {
-      s.run = pickRun(null);
+    const runOk = Array.isArray(s.run) && s.run.length > 0 &&
+      s.run.every(id => BY_ID[id] && id !== 'secret') &&
+      typeof s.seed === 'number' && TERM_CMDS.includes(s.termCmd);
+
+    if (!runOk) {
+      Object.assign(s, newRun(null, null));
       s.found = [];
       s.elapsed = 0;
       s.last = null;
       s.end = null;
     }
     s.found = (Array.isArray(s.found) ? s.found : []).filter(id => s.run.includes(id) || id === 'secret');
+    s.seen = Array.isArray(s.seen) ? s.seen.filter(i => Number.isInteger(i) && i >= 0 && i < REWARDS.length) : [];
     return s;
   }
 
@@ -269,17 +379,20 @@
   }
 
   const state = load();
+  save(); // persist a brand-new run right away, so a reload doesn't reshuffle the bugs
 
   /* ---------------------------------------------------------
      MOUNT THIS RUN'S BUGS
-     If a spot can't be found on the page, swap in a spare one.
+     Each bug gets its own seeded random, so it lands in the same spot
+     after a reload. If a spot can't be found, a spare one is swapped in.
   --------------------------------------------------------- */
   const els = {};
+  const rngFor = id => mulberry32((state.seed ^ hashStr(id)) >>> 0);
 
   (function mountRun() {
     const failed = [];
     state.run.forEach(id => {
-      const el = BY_ID[id].mount();
+      const el = BY_ID[id].mount(rngFor(id));
       if (el) els[id] = el; else failed.push(id);
     });
 
@@ -288,7 +401,7 @@
       failed.forEach(fid => {
         while (spare.length) {
           const nid = spare.shift();
-          const el = BY_ID[nid].mount();
+          const el = BY_ID[nid].mount(rngFor(nid));
           if (el) {
             state.run[state.run.indexOf(fid)] = nid;
             els[nid] = el;
@@ -376,11 +489,16 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('dbg-show'), action ? 7000 : 4800);
   }
 
-  let lastReward = -1;
-  function randomReward() {
-    let i;
-    do { i = Math.floor(Math.random() * REWARDS.length); } while (i === lastReward && REWARDS.length > 1);
-    lastReward = i;
+  // Never repeats until every tip has been shown once (saved across visits).
+  function nextReward() {
+    let pool = REWARDS.map((_, i) => i).filter(i => !state.seen.includes(i));
+    if (!pool.length) {
+      state.seen = [];
+      pool = REWARDS.map((_, i) => i);
+    }
+    const i = pool[Math.floor(Math.random() * pool.length)];
+    state.seen.push(i);
+    save();
     return REWARDS[i];
   }
 
@@ -543,7 +661,7 @@
     }
   }
 
-  // Accepts a bug id, or a slot number (the last slot is always the secret bug).
+  // Accepts a bug id, or a slot number (the last slot is always the terminal bug).
   function resolveId(x) {
     if (x === 'secret' || x === TOTAL) return 'secret';
     if (typeof x === 'number' && x >= 1 && x < TOTAL) return SLOTS[x - 1];
@@ -567,7 +685,7 @@
     if (n >= TOTAL) {
       setTimeout(win, 700);
     } else {
-      toast(`🐛 Bug #${SLOTS.indexOf(id) + 1} squashed (${n}/${TOTAL})`, randomReward());
+      toast(`🐛 Bug #${SLOTS.indexOf(id) + 1} squashed (${n}/${TOTAL})`, nextReward());
     }
     return true;
   }
@@ -658,10 +776,10 @@
   }
 
   /* ---------------------------------------------------------
-     PLAY AGAIN: new random set, clock reset, best time + rank kept
+     PLAY AGAIN: new seed + new random set, clock reset, best time + rank kept
   --------------------------------------------------------- */
   function playAgain() {
-    state.run = pickRun(state.run);
+    Object.assign(state, newRun(state.run, state.termCmd));
     state.found = [];
     state.elapsed = 0;
     state.last = null;
@@ -833,7 +951,7 @@
 
   /* ---------------------------------------------------------
      KONAMI CODE  ↑ ↑ ↓ ↓ ← → ← → B A
-     Matrix theme for 6s + counts as the secret bug.
+     Hidden bonus: matrix theme for 6s + it also counts as the terminal bug.
   --------------------------------------------------------- */
   if (CONFIG.enableKonami) {
     const SEQ = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
@@ -900,6 +1018,13 @@
     setHidden,
     playAgain,
     open: openVault,
+
+    // Which terminal reply should show the hidden bug right now? (null = none)
+    terminalBug() {
+      if (state.hidden || state.found.includes('secret')) return null;
+      return state.termCmd;
+    },
+
     status() {
       return {
         total: TOTAL,
@@ -917,6 +1042,7 @@
         }))
       };
     },
+
     // wipes EVERYTHING, including best time, wins and rank (for testing)
     reset() {
       try { localStorage.removeItem(CONFIG.storageKey); } catch (e) { /* ignore */ }
