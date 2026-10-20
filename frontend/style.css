@@ -1983,3 +1983,237 @@ footer {
 
     flex-shrink: 0;
 }
+
+
+/* =========================================================
+   HOME + ABOUT POLISH
+   Hero: availability pill + social icons
+   About: photo frame, quick-fact cards, "currently learning" strip
+   Uses your existing CSS variables, so light / dark both work.
+   Load after scroll-fx.css.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   HERO · availability pill (sits above "Hi, I'm Satyam")
+--------------------------------------------------------- */
+.hero-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem 0.95rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: border-color 0.25s, background 0.25s, color 0.25s, transform 0.25s;
+}
+
+.hero-status:hover {
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.status-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: statusPing 2s ease-out infinite;
+}
+
+@keyframes statusPing {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* ---------------------------------------------------------
+   HERO · social icons (below the AI/ML resume link)
+--------------------------------------------------------- */
+.hero-social {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.hero-social a {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  transition: color 0.25s, border-color 0.25s, transform 0.25s, background 0.25s;
+}
+
+.hero-social a:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+  background: var(--bg-tertiary);
+  transform: translateY(-3px);
+}
+
+.hero-social a:focus-visible,
+.hero-status:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------
+   ABOUT · photo frame (offset outline, so the photo doesn't look flat)
+--------------------------------------------------------- */
+.profile-image {
+  outline: 1px solid var(--border-color);
+  outline-offset: 10px;
+  transition: transform 0.1s ease-out, outline-color 0.3s ease;
+}
+
+.profile-image:hover {
+  outline-color: rgba(96, 165, 250, 0.7);
+}
+
+/* ---------------------------------------------------------
+   ABOUT · quick-fact cards
+--------------------------------------------------------- */
+.about-facts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.fact-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s;
+  transform-style: preserve-3d;
+}
+
+.fact-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.fact-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.fact-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.fact-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fact-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------
+   ABOUT · "currently learning" strip
+--------------------------------------------------------- */
+.about-learning {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.9rem;
+  padding: 1rem 1.1rem;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.about-learning .fact-icon {
+  background: rgba(96, 165, 250, 0.14);
+  color: #60a5fa;
+}
+
+.learning-text {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.learning-text a {
+  display: inline-block;
+  margin-top: 0.2rem;
+  color: #60a5fa;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.learning-text a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* the offset frame would hang outside a narrow screen */
+  .profile-image {
+    outline: none;
+  }
+
+  .hero-social {
+    margin-top: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot::after {
+    animation: none;
+  }
+}

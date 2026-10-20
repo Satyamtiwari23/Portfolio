@@ -1,0 +1,86 @@
+/* =========================================================
+   SCROLL EFFECTS
+   1 reveal   2 stagger   3 underline draw   4 progress bar   5 active nav link
+
+   The "hidden" state only exists while JS has marked an element
+   (.sfx-pre) AND turned the effects on (html.sfx-ready). If the script
+   fails, or the visitor prefers reduced motion, nothing is ever hidden.
+   All temporary classes are removed once an element has appeared, so
+   your own card hover / tilt transitions come back untouched.
+
+   Reveal uses the separate `translate` property, not `transform`,
+   so it never fights with the 3D tilt effect in script.js.
+   ========================================================= */
+
+:root {
+  --sfx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- 1 + 2 · reveal (stagger delay comes from --sfx-delay) ---------- */
+html.sfx-ready .sfx-pre:not(.sfx-in) {
+  opacity: 0;
+  translate: 0 var(--sfx-y, 24px);
+  transition: none !important; /* no accidental fade-out when the class is added */
+}
+
+html.sfx-ready .sfx-pre.sfx-in {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.7s ease var(--sfx-delay, 0ms),
+    translate 0.8s var(--sfx-ease) var(--sfx-delay, 0ms) !important;
+}
+
+/* ---------- 3 · section underline draws itself, left to right ---------- */
+html.sfx-ready .sfx-pre:not(.sfx-in) .section-underline {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+html.sfx-ready .sfx-pre.sfx-in .section-underline {
+  transform: scaleX(1);
+  transform-origin: left center;
+  transition: transform 0.9s var(--sfx-ease) calc(var(--sfx-delay, 0ms) + 0.25s);
+}
+
+/* ---------- 4 · scroll progress bar (lives at the bottom edge of the navbar) ---------- */
+.sfx-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #60a5fa, #22c55e);
+  transition: transform 0.12s linear;
+}
+
+/* ---------- 5 · active nav link ---------- */
+.desktop-nav a.is-active {
+  color: var(--text-primary);
+}
+
+/* reuses your existing underline, just keeps it drawn */
+.desktop-nav a.is-active::after {
+  width: 78%;
+}
+
+.mobile-nav a.is-active {
+  background: var(--bg-tertiary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sfx-progress { transition: none; }
+}
+
+@media print {
+  html.sfx-ready .sfx-pre {
+    opacity: 1 !important;
+    translate: none !important;
+  }
+
+  .sfx-progress { display: none; }
+}

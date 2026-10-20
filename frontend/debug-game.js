@@ -1,16 +1,27 @@
 /* =========================================================
-   DEBUG THE PORTFOLIO  (v3: every run is unique)
+   DEBUG THE PORTFOLIO  (v4: clue chain + levels + shrinking hints)
 
-   - 15 bug spots live on the page. Each run picks 5 of them at random.
-   - The 6th bug hides inside one of the TERMINAL's replies (help, about,
-     skills, projects, contact or resume). Which one changes every run.
-     Visitors just click the terminal buttons and watch for a 🐛.
-   - Inside a run, bugs are seeded: reloading the page keeps them in the
-     same place. A new run gets a new seed, so the exact letter, chip,
-     garbled text and note are different every time.
-   - Tips / jokes never repeat until all of them have been shown once.
-   - Best time is saved; ranks come from wins + speed.
-   - The free-chat reward is unlocked on the FIRST win only.
+   How a run works
+   - 6 bugs per run: 5 random page spots + 1 hidden in a terminal reply.
+   - The 6 bugs are ordered easy -> hard (the terminal bug is always last).
+   - Squashing a bug shows a CRYPTIC clue for the next one (also kept in the
+     side panel under "Current clue"), plus a small tip/joke.
+   - The side panel also has EASY, DIRECT hints. They start locked; tapping
+     one unlocks it. How many exist depends on the level:
+         Level 1: 5 hints   Level 2: 4   Level 3: 3   Level 4: 2   Level 5: 1   Level 6+: 0
+     Which slots get a hint is random per run.
+
+   Levels
+   - Level = wins + 1. Every win makes the next run harder:
+       * fewer easy hints (above)
+       * harder bug spots (level 1 has none of the hardest ones)
+       * subtler visuals (glitches are rarer, icons are fainter)
+   - Best times are kept per level, so a harder level can still set records.
+
+   Uniqueness
+   - Each run has a seed: the exact letter, chip, garbled text and notes are
+     different every run, but stay put if the page is reloaded mid-run.
+   - Tips never repeat until all of them have been shown once.
 
    Everything is injected from JS, so removing this one <script>
    tag gives you back the original portfolio.
@@ -34,13 +45,17 @@
     // Principal Debugger needs 3+ wins AND a best time at or under this.
     principalMaxMs: 120000,
 
+    // Time added to the clock each time a hint is unlocked. 0 = free hints.
+    // Try 10000 (10 s) if you want hints to cost something.
+    hintPenaltyMs: 0,
+
     vault: {
       title: 'Vault unlocked',
       // ✏️ EDIT: reward for the FIRST win only. Change it to whatever you actually want to offer.
       message: 'You debugged the whole portfolio. As a thank-you: a free 15-minute chat about your project, resume or LaTeX formatting. Mention the code below when you message me.',
       code: 'BUGFREE-2026',
       replayTitle: 'Build passing, again',
-      replayMessage: 'The vault reward unlocks once, on your first win. Replays earn rank and speed records.',
+      replayMessage: 'The vault reward unlocks once, on your first win. Replays earn rank, levels and speed records.',
       claimLabel: 'Claim reward',
       shareLabel: 'Share',
       againLabel: 'Play again',
@@ -51,12 +66,22 @@
 
   const RUN_SIZE = 5; // random page bugs per run (+1 in the terminal = 6)
 
-  // Terminal replies that can hide the 6th bug (all have a clickable button under the terminal).
+  // Terminal replies that can hide the 6th bug (all have a chip button under the terminal).
   const TERM_CMDS = ['help', 'about', 'skills', 'projects', 'contact', 'resume'];
+
+  // Cryptic wording for each reply (used in the chain clue).
+  const TERM_RIDDLE = {
+    help: 'the answer that explains how to ask',
+    about: 'the answer that tells you who I am',
+    skills: 'the answer that lists what I am good at',
+    projects: 'the answer that shows what I have built',
+    contact: 'the answer that tells you how to reach me',
+    resume: 'the answer that hands you my papers'
+  };
 
   const RANKS = ['Intern Debugger', 'Junior Debugger', 'Senior Debugger', 'Principal Debugger'];
 
-  // Shown one at a time when a bug is squashed. Never repeats until all have been seen.
+  // Small tip/joke under each clue. Never repeats until all have been shown once.
   const REWARDS = [
     '🧠 The first computer "bug" was a real moth found in Harvard\'s Mark II in 1947.',
     '💡 JS tip: user?.name ?? "Guest" handles missing values in one line.',
@@ -223,19 +248,22 @@
     return chars.join('');
   }
 
-  const letterBug = (id, section, selector, where) => ({
-    id, section, mode: 'restore',
-    hint: `A letter in the ${where} glitches every few seconds. Read closely.`,
+  /* Each bug has:
+       diff   1 easy .. 3 hard   (decides the order inside a run and which levels can use it)
+       hint   EASY and DIRECT    (side panel, locked until the player taps it)
+       riddle CRYPTIC            (chain clue shown after the previous bug is squashed)   */
+  const letterBug = (id, section, selector, diff, hint, riddle) => ({
+    id, section, diff, hint, riddle, mode: 'restore',
     mount(rng) { return randomLetter(selector, rng); }
   });
 
-  const iconBug = (id, section, hint, getHost, extraClass) => ({
-    id, section, hint, mode: 'remove',
+  const iconBug = (id, section, diff, hint, riddle, getHost, extraClass) => ({
+    id, section, diff, hint, riddle, mode: 'remove',
     mount() { return iconIn(getHost(), extraClass); }
   });
 
-  const chipBug = (id, hint) => ({
-    id, section: 'Skills', hint, mode: 'restore',
+  const chipBug = (id, hint, riddle) => ({
+    id, section: 'Skills', diff: 2, hint, riddle, mode: 'restore',
     mount(rng) {
       const chips = [...document.querySelectorAll('#skills .skill-tag')]
         .filter(c => !c.dataset.orig && c.textContent.trim().length >= 3);
@@ -256,58 +284,87 @@
      THE POOL: 15 spots on the page
   --------------------------------------------------------- */
   const POOL = [
-    letterBug('about-letter', 'About', '#about .about-text p', 'About text'),
-    letterBug('projects-letter', 'Projects', '#projects .section-title', '"Featured Projects" heading'),
-    letterBug('skills-letter', 'Skills', '#skills .section-title', 'Skills heading'),
-    letterBug('reviews-letter', 'Reviews', '#Reviews .section-title', 'Reviews heading'),
-    letterBug('contact-letter', 'Contact', '#contact .contact-info p', 'Get In Touch text'),
-    letterBug('terminal-letter', 'Terminal', '#terminal .term-sub', 'line under "Ask Me Anything"'),
+    letterBug('about-letter', 'About', '#about .about-text p', 2,
+      'A letter in the "About Me" paragraphs glitches every few seconds. Read them closely.',
+      'Where I speak about myself, a single letter cannot keep still. It shivers when you stop looking.'),
 
-    iconBug('project-icon-a', 'Projects',
-      'The first project card has an uninvited guest in its top corner.',
+    letterBug('projects-letter', 'Projects', '#projects .section-title', 2,
+      'A letter in the "Featured Projects" heading glitches.',
+      'The heading that brags about my best work has one letter with a nervous twitch.'),
+
+    letterBug('skills-letter', 'Skills', '#skills .section-title', 2,
+      'A letter in the "Skills & Expertise" heading glitches.',
+      'Above my toolbox, the title hides a letter that cannot sit still.'),
+
+    letterBug('reviews-letter', 'Reviews', '#Reviews .section-title', 2,
+      'A letter in the "Reviews & Ratings" heading glitches.',
+      'Where strangers grade my work, the title itself stutters on a single letter.'),
+
+    letterBug('contact-letter', 'Contact', '#contact .contact-info p', 2,
+      'A letter in the paragraph next to the contact form glitches.',
+      'In the place where I invite you to talk, one letter of my invitation trembles.'),
+
+    letterBug('terminal-letter', 'Terminal', '#terminal .term-sub', 2,
+      'A letter in the line under "Ask Me Anything" glitches.',
+      'Beneath the title of the talking window, one letter of the subtitle betrays its nerves.'),
+
+    iconBug('project-icon-a', 'Projects', 2,
+      'The first project card has a 🐛 in the top-right corner of its text area.',
+      'The first of my creations carries a stowaway, high in the corner of its description.',
       () => { const c = document.querySelector('#projects .project-card'); return c && c.querySelector('.project-info'); },
       'dbg-icon-tr'),
 
-    iconBug('project-icon-b', 'Projects',
-      'Look at the image of the last project card.',
+    iconBug('project-icon-b', 'Projects', 1,
+      'The last project card has a 🐛 in the bottom-right corner of its picture.',
+      'The last of my creations hides a stowaway in the corner of its picture, low and to the right.',
       () => { const c = document.querySelectorAll('#projects .project-card'); const l = c[c.length - 1]; return l && l.querySelector('.project-image'); }),
 
-    chipBug('skills-chip-a', 'One of the skill chips looks corrupted. Check all the cards.'),
-    chipBug('skills-chip-b', 'Another skill chip looks corrupted. Check all the cards.'),
+    chipBug('skills-chip-a',
+      'One skill chip in the Skills section has scrambled text (look for 0, 3, @, $ inside a word).',
+      'In my toolbox, one badge was scrambled by gremlins. Count the badges and read every one.'),
+
+    chipBug('skills-chip-b',
+      'Another skill chip in the Skills section has scrambled text.',
+      'The gremlins visited my toolbox twice. Another badge is not what it claims to be.'),
 
     {
-      id: 'reviews-dot', section: 'Reviews', mode: 'remove',
-      hint: 'Under the reviews, there is a dot that does not belong.',
+      id: 'reviews-dot', section: 'Reviews', diff: 3, mode: 'remove',
+      hint: 'Under the "verified clients" note below the reviews there is a small dot (●). Click it.',
+      riddle: 'Beneath the words about verified clients, a dot is far too round to be innocent.',
       mount() { return appendText($('.reviews-verification-note'), 'dbg-dot', '●'); }
     },
 
-    iconBug('reviews-form-icon', 'Reviews',
-      'The "Leave a Review" card has a bug in its corner.',
+    iconBug('reviews-form-icon', 'Reviews', 1,
+      'The "Leave a Review" card has a 🐛 in its top-right corner.',
+      'The card that begs for your opinion has an unwelcome guest in its upper corner.',
       () => $('.review-form-card'),
       'dbg-icon-tr'),
 
     {
-      id: 'footer-todo', section: 'Footer', mode: 'remove',
-      hint: 'Someone left a forgotten note in the footer.',
+      id: 'footer-todo', section: 'Footer', diff: 2, mode: 'remove',
+      hint: 'There is a small forgotten note (like a TODO comment) in the footer.',
+      riddle: 'Where the page runs out of words, somebody left a note to their future self.',
       mount(rng) { return appendText($('footer'), 'dbg-code', pickFrom(FOOTER_NOTES, rng)); }
     },
 
     {
-      id: 'terminal-todo', section: 'Terminal', mode: 'remove',
-      hint: 'The "Ask Me Anything" heading has a forgotten note under it.',
+      id: 'terminal-todo', section: 'Terminal', diff: 2, mode: 'remove',
+      hint: 'There is a small forgotten note under the "Ask Me Anything" heading.',
+      riddle: 'Under the talking window\'s title sits a note, written in a language only machines love.',
       mount(rng) { return appendText($('#terminal .section-header'), 'dbg-code', pickFrom(TERMINAL_NOTES, rng)); }
     },
 
-    iconBug('nav-icon', 'Navbar',
-      'The hardest one: look closely at the logo in the navbar.',
+    iconBug('nav-icon', 'Navbar', 3,
+      'There is a tiny 🐛 on the logo badge in the navbar (next to the "S" circle).',
+      'High up, where the page never scrolls away, the badge that carries my initial has a hitchhiker.',
       () => $('.logo-badge'),
       'dbg-icon-nav')
   ];
 
   // The 6th bug hides in a terminal reply (terminal.js draws it; Konami works too).
   const SECRET = {
-    id: 'secret', section: 'Terminal', mode: 'none',
-    hint: 'Not on the page itself. Open the terminal, press its buttons (help, about, skills...) and watch the replies for a 🐛.',
+    id: 'secret', section: 'Terminal', diff: 4, mode: 'none',
+    hint: '', riddle: '', // both are built from the chosen command, see bugHint() / bugRiddle()
     mount() { return null; }
   };
 
@@ -321,6 +378,9 @@
     run: null,          // ids of this run's page bugs
     seed: 0,            // makes this run's bugs unique, and stable across reloads
     termCmd: 'help',    // which terminal reply hides the 6th bug
+    runLevel: 1,        // level of the current run
+    hintSlots: null,    // bug ids that have an easy hint in the panel this run
+    hintsOpen: [],      // easy hints the player has unlocked
     found: [],          // ids found in this run
     elapsed: 0,
     last: null,
@@ -329,25 +389,35 @@
     hinted: false,
     seen: [],           // tips already shown (so they never repeat)
     wins: 0,
-    best: null,         // fastest win, in ms
+    bests: {},          // fastest win per level, in ms
     newBest: false,     // did the latest win set a record?
     promotedTo: null,   // rank name if the latest win promoted you
     announce: false     // show a "new run" toast after Play again
   });
 
-  function newRun(prevRun, prevTerm) {
-    const ids = POOL.map(b => b.id);
-    let pick = shuffle(ids).slice(0, RUN_SIZE);
-    for (let i = 0; i < 20; i++) {
+  // Level decides which spots can appear: level 1 has none of the hardest ones.
+  function newRun(prevRun, prevTerm, level) {
+    const hard = POOL.filter(b => b.diff >= 3).map(b => b.id);
+    const easy = POOL.filter(b => b.diff < 3).map(b => b.id);
+    const maxHard = level <= 1 ? 0 : level === 2 ? 1 : 2;
+    const minHard = level >= 6 ? 2 : level >= 4 ? 1 : 0;
+
+    let pick = null;
+    for (let i = 0; i < 30; i++) {
+      const hardCount = Math.min(hard.length, minHard + Math.floor(Math.random() * (maxHard - minHard + 1)));
+      pick = shuffle(hard).slice(0, hardCount).concat(shuffle(easy).slice(0, RUN_SIZE - hardCount));
       const overlap = prevRun ? pick.filter(x => prevRun.includes(x)).length : 0;
       if (overlap <= 2) break; // make replays feel fresh
-      pick = shuffle(ids).slice(0, RUN_SIZE);
     }
+
     const cmds = TERM_CMDS.filter(c => c !== prevTerm);
     return {
       run: pick,
       seed: Math.floor(Math.random() * 4294967296),
-      termCmd: pickFrom(cmds, Math.random)
+      termCmd: pickFrom(cmds, Math.random),
+      runLevel: level,
+      hintSlots: null,
+      hintsOpen: []
     };
   }
 
@@ -358,18 +428,28 @@
       if (saved && typeof saved === 'object') s = Object.assign(s, saved);
     } catch (e) { /* storage blocked or corrupt: start fresh */ }
 
+    // older saves kept one global best time
+    if (s.best && !Object.keys(s.bests || {}).length) s.bests = { 1: s.best };
+    delete s.best;
+    if (!s.bests || typeof s.bests !== 'object') s.bests = {};
+
     const runOk = Array.isArray(s.run) && s.run.length > 0 &&
       s.run.every(id => BY_ID[id] && id !== 'secret') &&
       typeof s.seed === 'number' && TERM_CMDS.includes(s.termCmd);
 
     if (!runOk) {
-      Object.assign(s, newRun(null, null));
+      Object.assign(s, newRun(null, null, (s.wins || 0) + 1));
       s.found = [];
       s.elapsed = 0;
       s.last = null;
       s.end = null;
     }
+
+    if (!Number.isInteger(s.runLevel) || s.runLevel < 1) {
+      s.runLevel = s.end ? Math.max(1, s.wins) : (s.wins || 0) + 1;
+    }
     s.found = (Array.isArray(s.found) ? s.found : []).filter(id => s.run.includes(id) || id === 'secret');
+    s.hintsOpen = Array.isArray(s.hintsOpen) ? s.hintsOpen : [];
     s.seen = Array.isArray(s.seen) ? s.seen.filter(i => Number.isInteger(i) && i >= 0 && i < REWARDS.length) : [];
     return s;
   }
@@ -380,6 +460,12 @@
 
   const state = load();
   save(); // persist a brand-new run right away, so a reload doesn't reshuffle the bugs
+
+  const RUN_LEVEL = state.runLevel;
+
+  // Harder levels: glitches happen less often, icons are fainter (CSS variables read by debug-game.css).
+  htmlEl.style.setProperty('--dbg-glitch', Math.min(5 + (RUN_LEVEL - 1) * 2, 13) + 's');
+  htmlEl.style.setProperty('--dbg-icon-opacity', String(Math.max(0.6 - (RUN_LEVEL - 1) * 0.12, 0.25)));
 
   /* ---------------------------------------------------------
      MOUNT THIS RUN'S BUGS
@@ -415,12 +501,58 @@
     }
   })();
 
-  const SLOTS = state.run.concat(['secret']); // slot numbers: 1..n, secret is always last
+  // Chain order: easy -> hard (ties broken by the run's seed). The terminal bug is always last.
+  const SLOTS = (function () {
+    const orderRng = rngFor('order');
+    return state.run
+      .map(id => ({ id, d: BY_ID[id].diff, k: orderRng() }))
+      .sort((a, b) => a.d - b.d || a.k - b.k)
+      .map(x => x.id)
+      .concat(['secret']);
+  })();
   const TOTAL = SLOTS.length;
+
+  // Which slots get an EASY hint this run (5 at level 1, then 4, 3, 2, 1, 0).
+  (function ensureHintSlots() {
+    const need = Math.max(0, TOTAL - RUN_LEVEL);
+    const ok = Array.isArray(state.hintSlots) && state.hintSlots.length === need &&
+      state.hintSlots.every(id => SLOTS.includes(id));
+    if (!ok) {
+      state.hintSlots = shuffle(SLOTS, rngFor('hints')).slice(0, need);
+      state.hintsOpen = state.hintsOpen.filter(id => state.hintSlots.includes(id));
+      save();
+    }
+  })();
+
+  /* ---------------------------------------------------------
+     CLUES
+  --------------------------------------------------------- */
+  // EASY, direct hint (side panel).
+  function bugHint(id) {
+    if (id === 'secret') return `Press the "${state.termCmd}" button under the terminal. A 🐛 is hiding in that reply.`;
+    return BY_ID[id].hint;
+  }
+
+  // CRYPTIC clue (shown after the previous bug is squashed).
+  function bugRiddle(id) {
+    if (id === 'secret') {
+      return 'No scrolling will find this one. Speak to the little black window: the stowaway rides in ' +
+        TERM_RIDDLE[state.termCmd] + '.';
+    }
+    return BY_ID[id].riddle;
+  }
+
+  // The first bug in chain order that hasn't been found yet.
+  const nextTarget = () => SLOTS.find(id => !state.found.includes(id)) || null;
 
   /* ---------------------------------------------------------
      RANKS + CLOCK
   --------------------------------------------------------- */
+  function bestAny() {
+    const v = Object.values(state.bests).filter(Number.isFinite);
+    return v.length ? Math.min.apply(null, v) : null;
+  }
+
   function rankIndex(wins, best) {
     if (wins >= 3 && best && best <= CONFIG.principalMaxMs) return 3;
     if (wins >= 2) return 2;
@@ -428,8 +560,10 @@
     return 0;
   }
 
+  const currentRank = () => RANKS[rankIndex(state.wins, bestAny())];
+
   function nextRankHint() {
-    const r = rankIndex(state.wins, state.best);
+    const r = rankIndex(state.wins, bestAny());
     if (r === 0) return 'Fix every bug to become a Junior Debugger.';
     if (r === 1) return 'Win once more to become a Senior Debugger.';
     if (r === 2) {
@@ -437,7 +571,13 @@
         ? `Finish a run in under ${fmt(CONFIG.principalMaxMs)} to become a Principal Debugger.`
         : `Win ${3 - state.wins} more time(s), with one run under ${fmt(CONFIG.principalMaxMs)}, to become a Principal Debugger.`;
     }
-    return 'Top rank reached. Beat your best time.';
+    return 'Top rank reached. Beat your best times.';
+  }
+
+  function levelLine() {
+    const nextHints = Math.max(0, TOTAL - (RUN_LEVEL + 1));
+    const h = nextHints === 0 ? 'no hints at all' : nextHints === 1 ? '1 hint' : nextHints + ' hints';
+    return `Level ${RUN_LEVEL} cleared. Level ${RUN_LEVEL + 1}: ${h}, harder bugs.`;
   }
 
   function liveMs() {
@@ -446,12 +586,13 @@
   }
 
   /* ---------------------------------------------------------
-     TOAST
+     TOAST   opts: { tip, action:{label,run}, ms }
   --------------------------------------------------------- */
   let toastEl = null;
   let toastTimer = null;
 
-  function toast(title, bodyText, action) {
+  function toast(title, bodyText, opts) {
+    opts = opts || {};
     if (!toastEl) {
       toastEl = document.createElement('div');
       toastEl.className = 'dbg-toast';
@@ -473,12 +614,19 @@
       toastEl.appendChild(b);
     }
 
-    if (action) {
+    if (opts.tip) {
+      const tip = document.createElement('div');
+      tip.className = 'dbg-toast-tip';
+      tip.textContent = opts.tip;
+      toastEl.appendChild(tip);
+    }
+
+    if (opts.action) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.textContent = action.label;
+      btn.textContent = opts.action.label;
       btn.addEventListener('click', () => {
-        action.run();
+        opts.action.run();
         toastEl.classList.remove('dbg-show');
       });
       toastEl.appendChild(btn);
@@ -486,7 +634,7 @@
 
     toastEl.classList.add('dbg-show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove('dbg-show'), action ? 7000 : 4800);
+    toastTimer = setTimeout(() => toastEl.classList.remove('dbg-show'), opts.ms || (opts.action ? 7000 : 4800));
   }
 
   // Never repeats until every tip has been shown once (saved across visits).
@@ -503,15 +651,20 @@
   }
 
   /* ---------------------------------------------------------
-     HUD
+     HUD + SIDE PANEL
   --------------------------------------------------------- */
   const hudWrap = document.createElement('div');
   hudWrap.innerHTML = `
     <div class="dbg-hud" hidden>
       <div class="dbg-panel" hidden>
         <div class="dbg-panel-head"></div>
+        <div class="dbg-clue-box" hidden>
+          <div class="dbg-clue-label">Current clue</div>
+          <p class="dbg-clue"></p>
+        </div>
+        <div class="dbg-hints-label"></div>
         <div class="dbg-slots"></div>
-        <p class="dbg-hint" aria-live="polite">Tap a locked slot for a hint.</p>
+        <p class="dbg-hint" aria-live="polite"></p>
         <p class="dbg-best"></p>
         <button type="button" class="dbg-link" data-act="hide">Hide game</button>
       </div>
@@ -528,6 +681,9 @@
   const hud = $('.dbg-hud');
   const panel = $('.dbg-panel', hud);
   const panelHead = $('.dbg-panel-head', hud);
+  const clueBox = $('.dbg-clue-box', hud);
+  const clueEl = $('.dbg-clue', hud);
+  const hintsLabel = $('.dbg-hints-label', hud);
   const pill = $('.dbg-pill', hud);
   const countEl = $('.dbg-count', hud);
   const timerEl = $('.dbg-timer', hud);
@@ -539,6 +695,7 @@
 
   let hudWasVisible = false;
   let tick = null;
+  let hintMsg = ''; // text under the slots (kept across re-renders)
 
   function stopTick() {
     if (tick) { clearInterval(tick); tick = null; }
@@ -555,10 +712,18 @@
     }, 1000);
   }
 
+  function unlockHint(id) {
+    if (!state.hintSlots.includes(id) || state.hintsOpen.includes(id)) return;
+    state.hintsOpen.push(id);
+    if (CONFIG.hintPenaltyMs > 0) state.elapsed += CONFIG.hintPenaltyMs;
+    save();
+  }
+
   function renderHUD() {
     const n = state.found.length;
     const done = n >= TOTAL;
-    const visible = !state.hidden && n > 0;
+    // visible once the player has started, been nudged, or has won before
+    const visible = !state.hidden && (n > 0 || state.hinted || state.wins > 0);
 
     if (visible && !hudWasVisible) {
       hud.classList.add('dbg-enter');
@@ -571,32 +736,63 @@
     htmlEl.classList.toggle('dbg-hidden', state.hidden);
 
     countEl.textContent = done ? '🔓 Vault' : n + '/' + TOTAL;
-    timerEl.hidden = done;
+    timerEl.hidden = done || n === 0;
     timerEl.textContent = fmt(liveMs());
     barFill.style.width = (n / TOTAL) * 100 + '%';
     pill.classList.toggle('dbg-complete', done);
 
-    panelHead.textContent = RANKS[rankIndex(state.wins, state.best)];
-    bestEl.textContent = state.best ? 'Best time: ' + fmt(state.best) : 'No best time yet. Beat the clock!';
+    panelHead.textContent = `Level ${RUN_LEVEL} · ${currentRank()}`;
+
+    const target = nextTarget();
+    clueBox.hidden = !target;
+    if (target) clueEl.textContent = bugRiddle(target);
+
+    const locked = state.hintSlots.filter(id => !state.hintsOpen.includes(id) && !state.found.includes(id)).length;
+    hintsLabel.textContent = state.hintSlots.length === 0
+      ? 'Hints: none on this level'
+      : `Easy hints: ${locked} locked (fewer every level)`;
+
+    hintEl.textContent = hintMsg || (state.hintSlots.length ? 'Tap a 🔒 slot to unlock its hint.' : 'No hints here. Follow the clue.');
+
+    const lvlBest = state.bests[RUN_LEVEL];
+    bestEl.textContent = lvlBest
+      ? `Best time, level ${RUN_LEVEL}: ${fmt(lvlBest)}`
+      : `No best time for level ${RUN_LEVEL} yet. Beat the clock!`;
 
     slotsEl.textContent = '';
     SLOTS.forEach((id, i) => {
-      const bug = BY_ID[id];
       const found = state.found.includes(id);
+      const hasHint = state.hintSlots.includes(id);
+      const open = state.hintsOpen.includes(id);
+
+      let icon, cls, label;
+      if (found) { icon = '✓'; cls = 'dbg-slot-found'; label = `Bug ${i + 1} fixed.`; }
+      else if (hasHint && open) { icon = '💡'; cls = 'dbg-slot-open'; label = `Bug ${i + 1}, hint unlocked. Activate to read it again.`; }
+      else if (hasHint) { icon = '🔒'; cls = 'dbg-slot-locked'; label = `Bug ${i + 1}, hint locked. Activate to unlock it.`; }
+      else { icon = '–'; cls = 'dbg-slot-none'; label = `Bug ${i + 1} has no hint.`; }
+
       const s = document.createElement('button');
       s.type = 'button';
-      s.className = 'dbg-slot' + (found ? ' dbg-slot-found' : '');
-      s.textContent = found ? '✓' : String(i + 1);
-      s.setAttribute('aria-label', found ? `Bug ${i + 1} fixed, ${bug.section}` : `Bug ${i + 1} not found yet, show hint`);
+      s.className = 'dbg-slot ' + cls;
+      s.innerHTML = '<span class="dbg-slot-n">' + (i + 1) + '</span><span class="dbg-slot-i">' + icon + '</span>';
+      s.setAttribute('aria-label', label);
+
       s.addEventListener('click', () => {
-        hintEl.textContent = found
-          ? `Bug #${i + 1} fixed in ${bug.section}.`
-          : `Bug #${i + 1} · ${bug.hint}`;
+        if (found) {
+          hintMsg = `Bug #${i + 1} is fixed (${BY_ID[id].section}).`;
+        } else if (hasHint) {
+          hintMsg = `Bug #${i + 1} · ${bugHint(id)}`;
+          unlockHint(id);
+        } else {
+          hintMsg = `No hint for bug #${i + 1}. Follow the clue above.`;
+        }
+        renderHUD();
       });
+
       slotsEl.appendChild(s);
     });
 
-    if (visible && !done && !state.end) startTick(); else stopTick();
+    if (visible && !done && !state.end && n > 0) startTick(); else stopTick();
   }
 
   pill.addEventListener('click', e => {
@@ -679,13 +875,20 @@
     save();
 
     applyFixed(BY_ID[id], els[id], false);
+    hintMsg = '';
     renderHUD();
 
     const n = state.found.length;
     if (n >= TOTAL) {
       setTimeout(win, 700);
     } else {
-      toast(`🐛 Bug #${SLOTS.indexOf(id) + 1} squashed (${n}/${TOTAL})`, nextReward());
+      // the "hint of the next bug" lives right here, inside the reward for this one
+      const next = nextTarget();
+      toast(
+        `🐛 Bug #${SLOTS.indexOf(id) + 1} squashed (${n}/${TOTAL})`,
+        next ? '🧩 Next clue: ' + bugRiddle(next) : '',
+        { tip: nextReward(), ms: 12000 }
+      );
     }
     return true;
   }
@@ -729,13 +932,15 @@
   function win() {
     if (!state.end) {
       state.end = Date.now();
+      const rankBefore = rankIndex(state.wins, bestAny());
       state.wins += 1;
 
-      const before = rankIndex(state.wins - 1, state.best);
-      state.newBest = !state.best || state.elapsed < state.best;
-      if (state.newBest) state.best = state.elapsed;
-      const after = rankIndex(state.wins, state.best);
-      state.promotedTo = after > before ? RANKS[after] : null;
+      const prev = state.bests[RUN_LEVEL];
+      state.newBest = !prev || state.elapsed < prev;
+      if (state.newBest) state.bests[RUN_LEVEL] = state.elapsed;
+
+      const rankAfter = rankIndex(state.wins, bestAny());
+      state.promotedTo = rankAfter > rankBefore ? RANKS[rankAfter] : null;
       save();
     }
     renderHUD();
@@ -776,10 +981,10 @@
   }
 
   /* ---------------------------------------------------------
-     PLAY AGAIN: new seed + new random set, clock reset, best time + rank kept
+     PLAY AGAIN: next level, new seed + new set, clock reset
   --------------------------------------------------------- */
   function playAgain() {
-    Object.assign(state, newRun(state.run, state.termCmd));
+    Object.assign(state, newRun(state.run, state.termCmd, state.wins + 1));
     state.found = [];
     state.elapsed = 0;
     state.last = null;
@@ -803,7 +1008,8 @@
     const v = CONFIG.vault;
     const first = state.wins === 1; // reward only on the first win
     const time = fmt(state.elapsed);
-    const rank = RANKS[rankIndex(state.wins, state.best)];
+    const rank = currentRank();
+    const lvlBest = state.bests[RUN_LEVEL] || state.elapsed;
 
     modal = document.createElement('div');
     modal.className = 'dbg-modal';
@@ -816,6 +1022,7 @@
         <p class="dbg-badge"></p>
         <p class="dbg-rank-line"></p>
         <p class="dbg-msg"></p>
+        <p class="dbg-level-line"></p>
         <p class="dbg-next"></p>
         <div class="dbg-vault-code" hidden></div>
         <div class="dbg-modal-actions">
@@ -829,13 +1036,14 @@
     $('#dbgVaultTitle', modal).textContent = first ? v.title : v.replayTitle;
     $('.dbg-time b', modal).textContent = time;
     $('.dbg-badge', modal).textContent = state.newBest && state.wins > 1
-      ? '🏆 New personal best!'
-      : 'Personal best: ' + fmt(state.best || state.elapsed);
+      ? `🏆 New best for level ${RUN_LEVEL}!`
+      : `Level ${RUN_LEVEL} best: ${fmt(lvlBest)}`;
     $('.dbg-rank-line', modal).textContent = 'Rank: ' + rank + (state.promotedTo ? ' · Promoted! 🎉' : '');
     $('.dbg-msg', modal).textContent = first ? v.message : v.replayMessage;
+    $('.dbg-level-line', modal).textContent = levelLine();
     $('.dbg-next', modal).textContent = nextRankHint();
     $('[data-act="share"]', modal).textContent = v.shareLabel;
-    $('[data-act="again"]', modal).textContent = v.againLabel;
+    $('[data-act="again"]', modal).textContent = `${v.againLabel} · Level ${RUN_LEVEL + 1}`;
 
     if (first) {
       const code = $('.dbg-vault-code', modal);
@@ -888,7 +1096,7 @@
   }
 
   function share(time, rank) {
-    const text = `I just debugged Satyam Tiwari's portfolio in ${time} and made ${rank} 🐛✅ Can you beat it?`;
+    const text = `I just cleared level ${RUN_LEVEL} of Satyam Tiwari's portfolio bug hunt in ${time} and made ${rank} 🐛✅ Can you beat it?`;
     const url = CONFIG.siteUrl;
     const wa = () => window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener');
 
@@ -981,15 +1189,17 @@
   }
 
   /* ---------------------------------------------------------
-     DISCOVERY + NEW-RUN MESSAGES
+     DISCOVERY + NEW-RUN MESSAGES  (both carry the first clue)
   --------------------------------------------------------- */
   if (state.announce) {
     state.announce = false;
     save();
     setTimeout(() => {
+      const lvlBest = state.bests[RUN_LEVEL];
       toast(
-        'New run: ' + TOTAL + ' fresh bugs 🐛',
-        state.best ? 'Your best time is ' + fmt(state.best) + '. Beat it?' : 'Find them all as fast as you can.'
+        `Level ${RUN_LEVEL}: ${TOTAL} fresh bugs 🐛`,
+        (lvlBest ? `Best for this level: ${fmt(lvlBest)}. ` : '') + '🧩 First clue: ' + bugRiddle(SLOTS[0]),
+        { ms: 12000 }
       );
     }, 700);
   }
@@ -1001,10 +1211,11 @@
       io.disconnect();
       state.hinted = true;
       save();
+      renderHUD(); // the HUD (with the clue panel) appears together with this nudge
       toast(
         'Psst... ' + TOTAL + ' bugs are hiding on this page 🐛',
-        'Find them all to unlock a vault.',
-        { label: 'Not now', run: () => setHidden(true) }
+        'Find them all to unlock a vault. 🧩 First clue: ' + bugRiddle(SLOTS[0]),
+        { action: { label: 'Not now', run: () => setHidden(true) }, ms: 12000 }
       );
     }, { threshold: 0.2 });
     io.observe(projectsSection);
@@ -1025,25 +1236,27 @@
       return state.termCmd;
     },
 
+    // Deliberately does NOT reveal where unfound bugs are (no easy hints here).
     status() {
+      const next = nextTarget();
       return {
         total: TOTAL,
+        level: RUN_LEVEL,
         found: state.found.slice(),
         hidden: state.hidden,
         complete: state.found.length >= TOTAL,
         wins: state.wins,
-        rank: RANKS[rankIndex(state.wins, state.best)],
-        best: state.best ? fmt(state.best) : null,
-        bugs: SLOTS.map((id, i) => ({
-          id: i + 1,
-          section: BY_ID[id].section,
-          hint: BY_ID[id].hint,
-          found: state.found.includes(id)
-        }))
+        rank: currentRank(),
+        best: state.bests[RUN_LEVEL] ? fmt(state.bests[RUN_LEVEL]) : null,
+        clue: next ? bugRiddle(next) : null,
+        bugs: SLOTS.map((id, i) => {
+          const found = state.found.includes(id);
+          return { id: i + 1, section: found ? BY_ID[id].section : null, found };
+        })
       };
     },
 
-    // wipes EVERYTHING, including best time, wins and rank (for testing)
+    // wipes EVERYTHING, including best times, wins and rank (for testing)
     reset() {
       try { localStorage.removeItem(CONFIG.storageKey); } catch (e) { /* ignore */ }
       location.reload();

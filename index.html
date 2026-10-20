@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="frontend/style.css">
   <link rel="stylesheet" href="frontend/terminal.css">
   <link rel="stylesheet" href="frontend/debug-game.css">
+  <link rel="stylesheet" href="frontend/scroll-fx.css">
 </head>
 
 <body>
@@ -95,6 +96,10 @@
   <section class="hero" id="home">
     <div class="hero-content">
       <div class="hero-text">
+        <a href="#contact" class="hero-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          Open to internships &amp; freelance
+        </a>
         <div class="hero-greeting">Hi, I’m Satyam 👋</div>
         <h1 class="hero-title">Satyam Tiwari</h1>
         <p class="hero-subtitle">Software Developer | AI & Web Development | Java • JavaScript</p>
@@ -113,6 +118,31 @@
         <div class="ai-resume-link">
           <a href="Resume/Satyam_Tiwari_AIML.pdf" target="_blank">
             AI/ML-focused resume →
+          </a>
+        </div>
+
+        <div class="hero-social">
+          <a href="https://www.linkedin.com/in/satyam-tiwari-8s5a4t3y8a7m4104/" target="_blank"
+            rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+            </svg>
+          </a>
+
+          <a href="https://github.com/satyamtiwari23" target="_blank" rel="noopener noreferrer" aria-label="GitHub"
+            title="GitHub">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+          </a>
+
+          <a href="mailto:sttiwari9211@gmail.com" aria-label="Email me" title="Email me">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+            </svg>
           </a>
         </div>
         <!-- ✅ End Buttons Wrapper -->
@@ -139,37 +169,87 @@
           <img src="images/satyam-profile.jpg" height="500px" alt="Satyam's Profile Picture" loading="lazy">
         </div>
         <div class="about-text">
-          <p>I’m a B.Tech Information Technology student focused on software development, web development, and practical
-            problem-solving through real-world projects.</p>
+          <p>I’m a B.Tech Information Technology student focused on software and web development, and on solving
+            practical problems through real-world projects. I like turning ideas into clean, user-focused
+            applications with solid structure and scalability.</p>
 
-          <p>Currently pursuing my degree at AKTU, I’m strengthening my foundation in frontend development, backend
-            logic, data structures, and modern programming practices while continuously learning AI concepts and their
-            practical applications.</p>
+          <p>I’m strengthening my foundation in data structures, OOP and full-stack development, while learning how
+            AI can be applied in practice. I’m actively looking for internships, freelance work and collaborations
+            where I can contribute and grow as a developer.</p>
 
-          <p>I enjoy transforming ideas into functional and user-focused applications with an emphasis on clean
-            structure, usability, and scalability. I’m actively seeking opportunities, internships, and collaborations
-            where I can contribute, learn, and grow as a developer.</p>
+          <div class="about-facts">
 
-          <div class="achievements">
-
-            <div class="achievement">
-              <div class="achievement-dot"></div>
-              <span>Strong foundation in Data Structures & Algorithms, OOP concepts, and analytical
-                problem-solving</span>
+            <div class="fact-card tilt-element" data-intensity="5">
+              <div class="fact-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="fact-label">Education</div>
+                <div class="fact-value">B.Tech, Information Technology · AKTU</div>
+              </div>
             </div>
 
-            <div class="achievement">
-              <div class="achievement-dot"></div>
-              <span>Experience building projects using Java, Python, JavaScript, HTML, CSS, and modern web
-                technologies</span>
+            <div class="fact-card tilt-element" data-intensity="5">
+              <div class="fact-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="fact-label">Focus</div>
+                <div class="fact-value">Full-stack web development, Java &amp; JavaScript</div>
+              </div>
             </div>
 
-            <div class="achievement">
-              <div class="achievement-dot"></div>
-              <span>Focused on full-stack web development, scalable application design, and learning practical AI
-                concepts</span>
+            <div class="fact-card tilt-element" data-intensity="5">
+              <div class="fact-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="fact-label">Status</div>
+                <div class="fact-value"><span class="status-dot" aria-hidden="true"></span>Open to internships &amp;
+                  freelance</div>
+              </div>
             </div>
 
+            <div class="fact-card tilt-element" data-intensity="5">
+              <div class="fact-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div>
+                <div class="fact-label">Location</div>
+                <div class="fact-value">India</div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="about-learning">
+            <div class="fact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div class="learning-text">
+              <strong>Currently learning:</strong> AI / ML fundamentals and their practical applications.
+              <br>
+              <a href="Resume/Satyam_Tiwari_AIML.pdf" target="_blank">See my AI/ML-focused resume →</a>
+            </div>
           </div>
         </div>
       </div>
@@ -829,6 +909,7 @@
   <script src="frontend/script.js"></script>
   <script src="frontend/debug-game.js"></script>
   <script src="frontend/terminal.js"></script>
+  <script src="frontend/scroll-fx.js"></script>
 </body>
 
 </html>

@@ -207,9 +207,9 @@
       // Runs after the message has been printed: hold it for a moment,
       // fade it out slowly, THEN take the visitor to the contact form.
       afterPrint = async els => {
-        await sleep(1000);
+        await sleep(1100);
         els.forEach(el => el.classList.add('is-fading'));
-        await sleep(1000);
+        await sleep(1800);
         els.forEach(el => el.remove());
         setZoom(false); // a zoomed terminal locks page scroll, so close it first
         const c = document.getElementById('contact');
@@ -234,6 +234,7 @@
       if (flag === 'stats') {
         const s = g.status();
         return [
+          `${key(pad('Level', 8))} ${s.level}`,
           `${key(pad('Rank', 8))} ${esc(s.rank)}`,
           `${key(pad('Wins', 8))} ${s.wins}`,
           `${key(pad('Best', 8))} ${esc(s.best || 'none yet')}`
@@ -248,13 +249,15 @@
         return [dim('The vault is still locked. Fix all 6 bugs first.')];
       }
 
+      // No easy hints here on purpose: those live (locked) in the game's side panel.
       const s = g.status();
-      const lines = [`Bugs fixed: ${key(s.found.length + '/' + s.total)}`];
+      const lines = [`Level ${s.level} · bugs fixed: ${key(s.found.length + '/' + s.total)}`];
       s.bugs.forEach(b => {
         lines.push(b.found
           ? `  ${ok('✔')} #${b.id} ${esc(b.section)}`
-          : `  ${dim('○')} #${b.id} ${dim(b.hint)}`);
+          : `  ${dim('○')} #${b.id} ${dim('???')}`);
       });
+      if (s.clue) lines.push('', key('Current clue: ') + esc(s.clue));
       if (s.complete) lines.push('', ok('Build passing.') + ' ' + dim('Type "debug vault" to reopen the vault.'));
       return lines;
     },
