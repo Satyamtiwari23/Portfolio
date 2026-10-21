@@ -11,8 +11,9 @@
   position: relative;
 }
 
-/* invisible, bigger tap area (mobile) */
-.dbg-bug::after {
+
+/* Keep the expanded bug hit-area away from skill badges */
+.dbg-bug:not(.skill-tag)::after {
   content: "";
   position: absolute;
   inset: -8px;
@@ -116,14 +117,20 @@
   100% { transform: scale(0); opacity: 0; }
 }
 
+/* Restore fixed bugs to their normal appearance */
 .dbg-fixed {
   animation: none !important;
-  pointer-events: none;
   cursor: inherit;
   color: inherit;
   font-family: inherit;
   border-style: solid;
   text-shadow: none;
+}
+
+/* Fixed skill chips must work like normal skill chips again */
+#skills .skill-tag.dbg-fixed[data-sp] {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .dbg-fixed::after { display: none; }
@@ -633,4 +640,13 @@ html.dbg-matrix {
   margin: 0.2rem 0 0.6rem;
   font-size: 0.85rem;
   color: #93c5fd;
+}
+
+.dbg-panel [data-act="reset"] {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.dbg-panel [data-act="reset"]:hover {
+  color: #ef4444;
 }

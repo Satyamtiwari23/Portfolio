@@ -666,7 +666,13 @@
         <div class="dbg-slots"></div>
         <p class="dbg-hint" aria-live="polite"></p>
         <p class="dbg-best"></p>
-        <button type="button" class="dbg-link" data-act="hide">Hide game</button>
+        <button type="button" class="dbg-link" data-act="reset">
+  ↻ Reset game · Start from Level 1
+</button>
+
+<button type="button" class="dbg-link" data-act="hide">
+  Hide game
+</button>
       </div>
       <button type="button" class="dbg-pill" aria-expanded="false" aria-label="Bug hunt progress">
         <span aria-hidden="true">🐛</span>
@@ -809,6 +815,17 @@
     if (!panel.hidden) {
       panel.hidden = true;
       pill.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  $('[data-act="reset"]', hud).addEventListener('click', () => {
+    const confirmed = window.confirm(
+      'Reset Bug Hunt to Level 1?\n\n' +
+      'This will erase your wins, rank, progress, and best times.'
+    );
+
+    if (confirmed) {
+      window.DebugGame.reset();
     }
   });
 
@@ -1101,7 +1118,7 @@
     const wa = () => window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener');
 
     if (navigator.share) {
-      navigator.share({ title: 'Debug the Portfolio', text, url }).catch(() => {});
+      navigator.share({ title: 'Debug the Portfolio', text, url }).catch(() => { });
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text + ' ' + url)
         .then(() => toast('Copied to clipboard', 'Paste it anywhere to share.'))
