@@ -1,0 +1,209 @@
+/* =========================================================
+   SKILL -> RELATED PROJECTS
+   - a small count badge on every skill chip that is used in a project
+   - a popover next to the chip listing those projects
+   Uses your CSS variables, so light / dark both work.
+   ========================================================= */
+
+/* ---------- chips that have related projects ---------- */
+#skills .skill-tag[data-sp] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+/* the badge is a pseudo-element, so the chip's text is never touched
+   (the bug game rewrites chip text, this keeps both features friends) */
+#skills .skill-tag[data-sp]::after {
+  content: attr(data-sp);
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* same look as your existing chip hover, kept while the popover is open */
+#skills .skill-tag.sp-active {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+#skills .skill-tag[data-sp]:hover::after,
+#skills .skill-tag.sp-active::after {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* a chip that is still a bug in the game must not show a badge */
+#skills .skill-tag.dbg-garbled:not(.dbg-fixed)::after {
+  display: none;
+}
+
+#skills .skill-tag[data-sp]:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* ---------- popover ---------- */
+.sp-pop {
+  position: fixed;
+  z-index: 950;
+  width: min(340px, calc(100vw - 16px));
+  padding: 0.75rem;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-xl);
+  animation: spIn 0.18s ease;
+}
+
+.sp-pop[hidden] {
+  display: none;
+}
+
+@keyframes spIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.sp-head {
+  margin: 0 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.sp-head strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.sp-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sp-row:hover,
+.sp-row:focus-visible {
+  background: var(--bg-tertiary);
+}
+
+.sp-row:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: -2px;
+}
+
+.sp-thumb {
+  width: 64px;
+  height: 40px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  background: var(--bg-tertiary);
+}
+
+.sp-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sp-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sp-badge {
+  padding: 0.05rem 0.45rem;
+  border: 1px solid rgba(180, 83, 9, 0.35);
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.dark .sp-badge {
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #fbbf24;
+}
+
+.sp-sub {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.sp-via {
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.sp-go {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.sp-row:hover .sp-go,
+.sp-row:focus-visible .sp-go {
+  color: var(--text-primary);
+}
+
+/* ---------- the project card you jump to ---------- */
+.project-card.sp-flash {
+  outline: 2px solid #60a5fa;
+  outline-offset: 4px;
+  animation: spFlash 1.8s ease;
+}
+
+@keyframes spFlash {
+  0%, 60% { outline-color: #60a5fa; }
+  100% { outline-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-pop { animation: none; }
+  .project-card.sp-flash { animation: none; }
+}
+
