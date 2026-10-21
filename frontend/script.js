@@ -243,7 +243,7 @@ if (reviewForm) {
 
       msg.className = "success";
       msg.style.display = "block";
-      msg.textContent = "✓ Review submitted successfully.";
+      msg.textContent = "✓ Review received! Awaiting approval from the website owner.";
       setTimeout(() => {
         msg.style.display = "none";
       }, 5000);
